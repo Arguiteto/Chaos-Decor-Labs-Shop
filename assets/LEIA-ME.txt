@@ -1,0 +1,11 @@
+Coloque aqui as fotos dos produtos.
+
+Sugestao de nome: id-do-produto-1.jpg e id-do-produto-2.jpg
+  (a -2 e a foto que aparece quando passa o mouse no card)
+
+Exemplo: vaso-p-1.jpg / vaso-p-2.jpg
+
+Depois e so informar o caminho no chaos-dados.js:
+  src:'assets/vaso-p-1.jpg', src2:'assets/vaso-p-2.jpg'
+
+Fotos quadradas (1:1) encaixam melhor na grade de produtos.
