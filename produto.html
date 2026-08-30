@@ -1,0 +1,319 @@
+<!doctype html>
+<!--
+  CHAOS DECOS LABS — PÁGINA DO PRODUTO
+  ─────────────────────────────────────
+  Abre com o id da peça na URL:  produto.html?id=vaso-p
+  Os cards da grade, do hero e da wishlist já apontam pra cá.
+
+  Estrutura (igual à referência que você mandou):
+    ESQUERDA  foto grande + miniaturas (fica fixa ao rolar)
+    DIREITA   coleção, nome, preço, cor do filamento, quantidade,
+              botão de compra, e as sanfonas de detalhe
+
+  Conteúdo da ficha (medidas, peso, material, cuidados):
+    chaos-dados.js  →  FICHAS e FICHA_PADRAO
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Produto — Chaos Decos Labs</title>
+  <meta name="theme-color" content="#F0E4D0" />
+  <link rel="stylesheet" href="chaos-loja.css">
+</head>
+<body>
+
+  <header class="site-header" id="cabecalho"></header>
+
+  <main id="pagina"></main>
+
+  <!-- ── PEÇAS RELACIONADAS ── -->
+  <section class="related" id="relacionados"></section>
+
+  <footer class="site-footer" id="rodape"></footer>
+
+  <script src="chaos-dados.js"></script>
+  <script>
+    montarCabecalho('produtos');
+    montarRodape();
+
+    /* ── Qual peça abrir: vem da URL (?id=) ── */
+    const idPedido = new URLSearchParams(location.search).get('id');
+    const produto = acharProduto(idPedido) || PRODUTOS[0];
+    const ficha = fichaDe(produto.id);
+    document.title = nomeExibido(produto) + ' — Chaos Decos Labs';
+
+    /* ── Sanfonas de detalhe ── */
+    const SECOES = [
+      { id:'descricao', titulo:'Descrição', aberta:true, conteudo:`
+          <p>${ficha.descricao}</p>
+          <p>Peça da linha <b>${produto.colecao}</b>, desenhada pelo mesmo princípio de todas: a
+             forma sai da função, a geometria é primária e a cor entra com propósito — não como
+             enfeite.</p>` },
+
+      { id:'ficha', titulo:'Medidas e peso', conteudo:`
+          <dl class="spec-list">
+            <div><dt>Medidas</dt><dd>${ficha.medidas}</dd></div>
+            <div><dt>Peso aproximado</dt><dd>${ficha.peso}</dd></div>
+            <div><dt>Categoria</dt><dd>${produto.categoria}</dd></div>
+            <div><dt>Coleção</dt><dd>${produto.colecao}</dd></div>
+          </dl>
+          <p class="spec-note">Medidas do produto acabado, com variação de até 1 mm — normal em
+             peça impressa camada a camada.</p>` },
+
+      { id:'material', titulo:'Material e impressão', conteudo:`
+          <p>${ficha.material}</p>
+          <p>Impressa em 3D por deposição de filamento, camada por camada, aqui na oficina.
+             As linhas finas que você vê na superfície são a marca do processo — são propositais,
+             não é defeito.</p>` },
+
+      { id:'prazo', titulo:'Produção e envio', conteudo:`
+          <p><b>${ficha.prazo}.</b></p>
+          <p>Nada fica pronto em prateleira: a impressora só começa a sua peça depois do pedido.
+             Por isso a cor é escolhida por você, e por isso o prazo de produção vem antes do
+             prazo da transportadora.</p>` },
+
+      { id:'cuidados', titulo:'Cuidados e avisos', conteudo:`
+          <ul class="care-list">${ficha.cuidados.map((c) => `<li>${c}</li>`).join('')}</ul>
+          <p>A cor pode ficar levemente diferente da que aparece na sua tela — cada monitor
+             calibra cor de um jeito. Medidas, material e componentes são os declarados acima.</p>` },
+
+      { id:'trocas', titulo:'Trocas, devoluções e garantia', conteudo:`
+          <p>Comprou e se arrependeu? Você tem <b>${EMPRESA.arrependimento} dias corridos</b>
+             do recebimento para devolver sem precisar justificar, com o frete de retorno por
+             nossa conta (CDC, art. 49).</p>
+          <p>Chegou com defeito? A peça tem <b>90 dias de garantia</b> contra defeito de
+             fabricação. Trocamos ou devolvemos o valor, como você preferir.</p>
+          <p><a href="politicas.html#trocas">Ler a política completa</a></p>` },
+    ];
+
+    /* ── Monta a página ── */
+    document.getElementById('pagina').innerHTML = `
+      <div class="breadcrumb breadcrumb-inline">
+        <a href="index.html"><span class="icon">${ICONES.casa}</span></a>
+        <span>›</span>
+        <a href="produtos.html?cat=${encodeURIComponent(produto.categoria)}">${produto.categoria}</a>
+        <span>›</span>
+        <b>${nomeExibido(produto)}</b>
+      </div>
+
+      <div class="pdp">
+        <!-- ESQUERDA: galeria -->
+        <div class="pdp-gallery">
+          <div class="pdp-stage">
+            <div class="pdp-photo" id="fotoGrande">${arteHTML(produto)}</div>
+            ${produto.flag ? flagHTML(produto) : ''}
+            <span class="pdp-tag">Impressa sob encomenda</span>
+          </div>
+          <div class="pdp-thumbs" id="miniaturas">
+            <button class="pdp-thumb is-on" data-vista="1" aria-label="Primeira imagem">${arteHTML(produto)}</button>
+            <button class="pdp-thumb" data-vista="2" aria-label="Segunda imagem">${arteHTML(produto, { segunda:true })}</button>
+          </div>
+        </div>
+
+        <!-- DIREITA: informações e compra -->
+        <div class="pdp-info">
+          <span class="pdp-collection">${produto.colecao}</span>
+          <h1 class="pdp-title">${nomeExibido(produto)}</h1>
+
+          <p class="pdp-sub">${produto.categoria} · impressão 3D · ${ficha.medidas}</p>
+
+          <p class="pdp-price">${precoExibido(produto)}
+             ${emBreve() ? '' : `<small>${PAGAMENTO.repassaTaxa ? 'à vista no Pix ou débito' : 'sem frete'}</small>`}</p>
+          ${emBreve() ? '' : `
+            <p class="pdp-parcela">ou ${chamadaParcelamento(produto.preco)} ·
+               <a href="politicas.html#pagamento">ver todas as parcelas</a></p>`}
+
+          <div class="pdp-block">
+            <span class="pdp-label">Cor do filamento: <b id="corEscolhida"></b></span>
+            <div class="swatches" id="amostras"></div>
+          </div>
+
+          ${emBreve() ? `
+            <p class="pdp-note pdp-note-breve"><span class="icon">${ICONES.aviso}</span>
+               Esta peça ainda não está à venda. O preço e as medidas finais saem quando
+               ela entrar no catálogo — ${whatsappHTML('me avise no WhatsApp')} se quiser
+               saber quando isso acontecer.</p>
+          ` : `
+          <div class="pdp-buy">
+            <div class="pdp-block">
+              <span class="pdp-label">Quantidade</span>
+              <div class="qty" id="quantidade">
+                <button data-passo="-1" aria-label="Diminuir">−</button>
+                <span id="qtdValor">1</span>
+                <button data-passo="1" aria-label="Aumentar">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pdp-actions">
+            <button class="btn btn-primary btn-buy" id="btnComprar">
+              Adicionar ao carrinho — <span id="precoBotao"></span>
+            </button>
+            <button class="btn-wish ${FAVORITAS.includes(produto.id) ? 'is-on' : ''}" id="btnWish"
+                    aria-label="Salvar na wishlist"><span class="icon">${ICONES.coracao}</span></button>
+          </div>
+
+          <p class="pdp-note"><span class="icon">${ICONES.aviso}</span>
+             ${ficha.prazo}. O frete é calculado no fechamento do pedido.</p>
+          `}
+
+          <!-- Exigência do Decreto 7.962/2013: o consumidor tem que
+               achar essas condições ANTES de comprar, não depois. -->
+          <p class="pdp-links">
+            <a href="politicas.html#entrega">Prazos e entrega</a>
+            <a href="politicas.html#arrependimento">Arrependimento em ${EMPRESA.arrependimento} dias</a>
+            <a href="politicas.html#trocas">Trocas e garantia</a>
+          </p>
+
+          <div class="accordion" id="sanfona">
+            ${SECOES.map((s) => `
+              <div class="acc-item ${s.aberta ? 'is-open' : ''}">
+                <button class="acc-head" aria-expanded="${!!s.aberta}">
+                  <span>${s.titulo}</span><span class="chevron"></span>
+                </button>
+                <div class="acc-body"><div class="acc-inner">${s.conteudo}</div></div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="brand-note">
+            <span class="pdp-label">A marca</span>
+            <h2>Chaos Decos Labs</h2>
+            <p>Objetos de decoração impressos em 3D: forma segue função, geometria clara e cor
+               com propósito. Cada peça é produzida sob encomenda, uma a uma, na cor que você
+               escolher.</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    /* ── Galeria: miniatura troca a foto grande ── */
+    const fotoGrande = document.getElementById('fotoGrande');
+    document.getElementById('miniaturas').addEventListener('click', (e) => {
+      const mini = e.target.closest('.pdp-thumb');
+      if (!mini) return;
+      document.querySelectorAll('.pdp-thumb').forEach((m) => m.classList.toggle('is-on', m === mini));
+      fotoGrande.innerHTML = arteHTML(produto, { segunda: mini.dataset.vista === '2' });
+      pintarCor();
+    });
+
+    /* ── Cor do filamento ──────────────────────────────────────
+       A bolinha escolhida repinta a forma principal da arte. Quando
+       você trocar a arte geométrica por foto real, o certo é ter uma
+       foto por cor: crie src_vermelho, src_navy… e troque aqui. */
+    let corAtual = ficha.cores[0];
+
+    document.getElementById('amostras').innerHTML = ficha.cores.map((c) => {
+      const cor = CORES_FILAMENTO[c];
+      return `<button class="swatch ${c === corAtual ? 'is-on' : ''}" data-cor="${c}"
+                      style="--amostra:${cor.hex}" title="${cor.nome}" aria-label="${cor.nome}"></button>`;
+    }).join('');
+
+    function pintarCor(){
+      const hex = CORES_FILAMENTO[corAtual].hex;
+      const arte = fotoGrande.querySelector('.prod-art');
+      if (arte) arte.style.setProperty('--c1', hex);
+      document.getElementById('corEscolhida').textContent = CORES_FILAMENTO[corAtual].nome;
+    }
+
+    document.getElementById('amostras').addEventListener('click', (e) => {
+      const bolinha = e.target.closest('.swatch');
+      if (!bolinha) return;
+      corAtual = bolinha.dataset.cor;
+      document.querySelectorAll('.swatch').forEach((s) => s.classList.toggle('is-on', s === bolinha));
+      pintarCor();
+    });
+    pintarCor();
+
+    /* ── Compra ───────────────────────────────────────────────
+       Com a loja em "Em breve" estes botões nem existem na página,
+       então nem tentamos ligá-los. O resto (sanfonas, relacionadas)
+       continua funcionando normalmente logo abaixo. */
+    if (!emBreve()){
+      let qtd = 1;
+
+      function atualizarPreco(){
+        document.getElementById('qtdValor').textContent = qtd;
+        document.getElementById('precoBotao').textContent = precoBR(produto.preco * qtd);
+      }
+
+      document.getElementById('quantidade').addEventListener('click', (e) => {
+        const botao = e.target.closest('button');
+        if (!botao) return;
+        qtd = Math.max(1, Math.min(99, qtd + Number(botao.dataset.passo)));
+        atualizarPreco();
+      });
+      atualizarPreco();
+
+      document.getElementById('btnComprar').addEventListener('click', () => {
+        /* Mesma peça em cor diferente é outra linha do carrinho —
+           na hora de imprimir, é outra peça. */
+        const jaTem = CARRINHO.find((i) => i.id === produto.id && i.cor === corAtual);
+        if (jaTem) jaTem.qtd += qtd; else CARRINHO.push({ id: produto.id, qtd, cor: corAtual });
+        salvarEstado();
+        montarCabecalho('produtos');
+        const botao = document.getElementById('btnComprar');
+        botao.classList.add('is-done');
+        botao.textContent = 'Adicionado ✓';
+        window.setTimeout(() => {
+          botao.classList.remove('is-done');
+          botao.innerHTML = 'Adicionar ao carrinho — <span id="precoBotao"></span>';
+          atualizarPreco();
+        }, 1600);
+      });
+
+      document.getElementById('btnWish').addEventListener('click', (e) => {
+        const posicao = FAVORITAS.indexOf(produto.id);
+        if (posicao >= 0) FAVORITAS.splice(posicao, 1); else FAVORITAS.push(produto.id);
+        salvarEstado();
+        e.currentTarget.classList.toggle('is-on', posicao < 0);
+        montarCabecalho('produtos');
+      });
+    }
+
+    /* ── Sanfonas ── */
+    document.getElementById('sanfona').addEventListener('click', (e) => {
+      const cabeca = e.target.closest('.acc-head');
+      if (!cabeca) return;
+      const item = cabeca.parentElement;
+      const abrir = !item.classList.contains('is-open');
+      item.classList.toggle('is-open', abrir);
+      cabeca.setAttribute('aria-expanded', String(abrir));
+    });
+
+    /* ── Relacionados ─────────────────────────────────────────
+       Primeiro as peças da mesma categoria; se sobrar espaço na
+       fileira, completa com as da mesma coleção. Pensar em família
+       é o princípio da marca: peça não vive solta. */
+    const mesmaCategoria = PRODUTOS.filter((p) => p.categoria === produto.categoria && p.id !== produto.id);
+    const mesmaColecao   = PRODUTOS.filter((p) => p.colecao === produto.colecao && p.id !== produto.id
+                                                  && !mesmaCategoria.includes(p));
+    const irmas = [...mesmaCategoria, ...mesmaColecao].slice(0, 4);
+    if (irmas.length){
+      document.getElementById('relacionados').innerHTML = `
+        <div class="wrap">
+          <h2 class="related-title">Da mesma família</h2>
+          <div class="related-grid">
+            ${irmas.map((p) => `
+              <a class="product-card" href="${linkProduto(p.id)}">
+                <div class="product-media">
+                  ${arteHTML(p, { classe:'art-front' })}
+                  ${arteHTML(p, { classe:'art-back', segunda:true })}
+                </div>
+                <div class="product-info">
+                  <span class="product-collection">${p.colecao}</span>
+                  <div class="product-line">
+                    <h3 class="product-name">${nomeExibido(p)}</h3>
+                    <span class="product-price"><b>${precoExibido(p)}</b></span>
+                  </div>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
