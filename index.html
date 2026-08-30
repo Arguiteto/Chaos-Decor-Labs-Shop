@@ -1,0 +1,151 @@
+<!doctype html>
+<!--
+  CHAOS DECOS LABS — HOME DA LOJA (HALL)
+  ───────────────────────────────────────
+  Estrutura do seu wireframe: barra superior (busca, logo, moeda,
+  login, wishlist, carrinho) + menu de abas, carrossel grande de
+  produtos e o carrossel "Decor para casa".
+
+  ONDE MEXER:
+  - Catálogo, preços e ícones  → chaos-dados.js
+  - Cores, tipografia, layout  → chaos-loja.css
+  - Só o que é exclusivo da home fica neste arquivo.
+
+  PÁGINAS DO CONJUNTO:
+  index.html (esta) · produtos.html · produto.html
+  favoritas.html · carrinho.html · politicas.html
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chaos Decos Labs — Loja</title>
+  <meta name="description" content="Loja Chaos Decos Labs — objetos de decoração impressos em 3D, linguagem Bauhaus: forma, função e cor com propósito." />
+  <meta name="theme-color" content="#F0E4D0" />
+  <link rel="stylesheet" href="chaos-loja.css">
+</head>
+<body>
+
+  <header class="site-header" id="cabecalho"></header>
+
+  <!-- ── CARROSSEL PRINCIPAL ── -->
+  <section class="hero-carousel">
+    <div class="hero-track" id="heroTrack"></div>
+    <button class="hero-arrow prev" id="heroPrev" aria-label="Produto anterior"><span class="icon"></span></button>
+    <button class="hero-arrow next" id="heroNext" aria-label="Próximo produto"><span class="icon"></span></button>
+    <div class="hero-dots" id="heroDots"></div>
+  </section>
+
+  <!-- ── FAIXA ── -->
+  <div class="strip-bar"><p>Impressão 3D de decoração · feito sob encomenda no Brasil</p></div>
+
+  <!-- ── CARROSSEL DE CATEGORIAS ── -->
+  <section class="category-section">
+    <div class="wrap">
+      <div class="category-head">
+        <div>
+          <h2>Decor para casa</h2>
+          <p>Produtos por categoria</p>
+        </div>
+        <div class="category-arrows">
+          <button class="round-btn" id="catPrev" aria-label="Categoria anterior"><span class="icon"></span></button>
+          <button class="round-btn" id="catNext" aria-label="Próxima categoria"><span class="icon"></span></button>
+        </div>
+      </div>
+    </div>
+    <div style="width:min(100%, calc(var(--content) + var(--edge) * 2)); margin-inline:auto;">
+      <div class="category-track" id="categoryTrack" style="margin-inline:var(--edge);"></div>
+    </div>
+  </section>
+
+  <footer class="site-footer" id="rodape"></footer>
+
+  <script src="chaos-dados.js"></script>
+  <script>
+    montarCabecalho('home');
+    montarRodape();
+
+    document.querySelector('#heroPrev .icon').innerHTML = ICONES.esquerda;
+    document.querySelector('#heroNext .icon').innerHTML = ICONES.direita;
+    document.querySelector('#catPrev .icon').innerHTML = ICONES.esquerda;
+    document.querySelector('#catNext .icon').innerHTML = ICONES.direita;
+
+    /* ── HERO: os 6 primeiros produtos, duplicados para o loop ── */
+    const destaques = PRODUTOS.slice(0, 6);
+    const heroTrack = document.getElementById('heroTrack');
+    const heroDotsEl = document.getElementById('heroDots');
+
+    heroTrack.innerHTML = [...destaques, ...destaques].map((p) => `
+      <div class="hero-slide">
+        ${arteHTML(p, { sombra:true })}
+        <div class="hero-slide-info">
+          <div class="hero-slide-text">
+            <span class="eyebrow">${p.colecao}</span>
+            <h2 class="hero-slide-title">${nomeExibido(p)}</h2>
+            <p class="hero-slide-price">${precoExibido(p)}</p>
+          </div>
+          <a class="btn btn-light" href="${linkProduto(p.id)}">${emBreve() ? 'Ver Peça' : 'Ver Item'}</a>
+        </div>
+      </div>
+    `).join('');
+
+    heroDotsEl.innerHTML = destaques.map((_, i) => `<button data-i="${i}" aria-label="Ir para o produto ${i + 1}"></button>`).join('');
+    const heroDots = [...heroDotsEl.querySelectorAll('button')];
+    heroDots[0].classList.add('is-active');
+
+    function larguraPasso(){
+      const slide = heroTrack.querySelector('.hero-slide');
+      if (!slide) return 0;
+      const gap = parseFloat(getComputedStyle(heroTrack).columnGap || getComputedStyle(heroTrack).gap) || 0;
+      return slide.getBoundingClientRect().width + gap;
+    }
+
+    function sincronizarPontos(){
+      const passo = larguraPasso();
+      if (!passo) return;
+      const indice = Math.round(heroTrack.scrollLeft / passo) % destaques.length;
+      heroDots.forEach((d, i) => d.classList.toggle('is-active', i === indice));
+    }
+
+    /* Liga o giro automático + arraste. O motor está no chaos-dados.js
+       (autoCarrossel) e é o mesmo que roda no celular. */
+    const giroHero = autoCarrossel(heroTrack, { velocidade: 42, aoMover: sincronizarPontos });
+
+    function moverHero(direcao){
+      const passo = larguraPasso();
+      if (!passo) return;
+      giroHero.parar();
+      heroTrack.scrollBy({ left: direcao * passo, behavior: 'smooth' });
+      giroHero.retomar();
+    }
+
+    document.getElementById('heroPrev').addEventListener('click', () => moverHero(-1));
+    document.getElementById('heroNext').addEventListener('click', () => moverHero(1));
+    heroDots.forEach((d) => d.addEventListener('click', () => {
+      giroHero.parar();
+      heroTrack.scrollTo({ left: larguraPasso() * Number(d.dataset.i), behavior: 'smooth' });
+      giroHero.retomar();
+    }));
+
+    /* ── CATEGORIAS ── */
+    const categoryTrack = document.getElementById('categoryTrack');
+    categoryTrack.innerHTML = CATEGORIAS.map((c) => `
+      <a class="category-card" href="produtos.html?cat=${encodeURIComponent(c.nome)}">
+        <div class="category-art">${arteHTML(c)}</div>
+        <p class="category-name">${c.nome}</p>
+      </a>
+    `).join('');
+
+    function moverCategoria(direcao){
+      const card = categoryTrack.querySelector('.category-card');
+      if (!card) return;
+      const gap = parseFloat(getComputedStyle(categoryTrack).columnGap || getComputedStyle(categoryTrack).gap) || 0;
+      categoryTrack.scrollBy({ left: direcao * (card.getBoundingClientRect().width + gap), behavior: 'smooth' });
+    }
+    document.getElementById('catPrev').addEventListener('click', () => moverCategoria(-1));
+    document.getElementById('catNext').addEventListener('click', () => moverCategoria(1));
+
+    ativarArraste(categoryTrack);
+  </script>
+</body>
+</html>
