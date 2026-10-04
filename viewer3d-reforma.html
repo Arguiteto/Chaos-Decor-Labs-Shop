@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<!--
+  MODELO 3D — VISUALIZADOR DO PORTFÓLIO CARLOS A. BOICO
+
+  O QUE ESTE ARQUIVO FAZ:
+  - Mostra o modelo exportado do SketchUp (.glb) com navegação parecida com a do SketchUp.
+  - Troca de cena com transição tipo Morph: as peças se movem, mudam de escala e somem.
+  - Na cena "Planta", os ambientes viram botões que abrem a planta baixa.
+  - Na cena "Implantação", vai para a vista superior travada, com as hachuras e a legenda.
+
+  SITUAÇÃO: pronto para receber o modelo do projeto "Reforma Unifamiliar". Por enquanto mostra a casa de teste.
+
+  ONDE MEXER: só no bloco CONFIG, no começo do SCRIPT.
+  COMO ELE APARECE: num quadro dentro da página do projeto (index.html), ao lado
+  do carrossel de fotos, com um botão para ampliar; ou direto pelo endereço
+  .../viewer3d-reforma.html
+
+  MODO AJUSTE: abra .../viewer3d-reforma.html?ajuste=1 para ver os nomes das peças do
+  modelo e ler as coordenadas de qualquer ponto com um clique.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modelo 3D — Carlos A. Boico</title>
+<meta name="theme-color" content="#f4efe8">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<style>
+  /* Mesmas cores e fontes do index.html */
+  :root {
+    --bg: #f4efe8;
+    --text: #171217;
+    --muted: #6e6372;
+    --purple: #6d28d9;
+    --purple-dark: #2e1065;
+    --purple-pale: #f1eaff;
+    --line: rgba(46, 16, 101, .16);
+    --vidro: rgba(251, 248, 244, .9);
+  }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); }
+
+  /* O visualizador ocupa o espaço que receber: a tela inteira ou o quadro da página do projeto. */
+  .v3d { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg);
+    color: var(--text); font-family: Georgia, "Times New Roman", serif; }
+  .v3d *, #desenho * { box-sizing: border-box; }
+  .v3d canvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+  .v3d canvas:active { cursor: grabbing; }
+  .v3d canvas.travado { cursor: move; }
+  .v3d button, #desenho button { font: inherit; -webkit-tap-highlight-color: transparent; }
+  .v3d button:focus-visible, .v3d a:focus-visible, #desenho button:focus-visible {
+    outline: 3px solid var(--purple); outline-offset: 2px; }
+
+  /* Botões em pílula, iguais aos do topo do projeto */
+  .pilula { display: inline-flex; align-items: center; justify-content: center; min-height: 42px;
+    padding: 0 20px; border-radius: 999px; border: 1px solid var(--line); background: var(--vidro);
+    color: var(--text); font-size: 16px; text-decoration: none; cursor: pointer; white-space: nowrap;
+    transition: background .2s ease, color .2s ease, border-color .2s ease; }
+  .pilula:hover { background: var(--purple-pale); }
+  .pilula.ativa { background: var(--purple-dark); color: var(--bg); border-color: var(--purple-dark); }
+
+  .topo { position: absolute; top: 14px; left: 16px; right: 16px; display: flex; flex-wrap: wrap;
+    align-items: flex-start; justify-content: space-between; gap: 10px; pointer-events: none; }
+  .topo > * { pointer-events: auto; }
+  #aviso { margin: 0 0 0 auto; padding: 7px 12px; border: 1px dashed rgba(46, 16, 101, .34);
+    border-radius: 999px; background: var(--vidro); color: var(--muted);
+    font: 12px/1.3 Arial, Helvetica, sans-serif; }
+  #aviso:empty { display: none; }
+
+  .rodape { position: absolute; left: 0; right: 0; bottom: 14px; display: flex; flex-direction: column;
+    align-items: center; gap: 9px; padding: 0 12px; pointer-events: none; }
+  #dica { margin: 0; padding: 3px 11px; border-radius: 999px; background: rgba(244, 239, 232, .82);
+    color: var(--muted); font: 12px/1.35 Arial, Helvetica, sans-serif; text-align: center; }
+  .barra { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; pointer-events: auto; }
+
+  /* Área do projeto, no canto de baixo à esquerda. Se os botões das cenas encostarem nela
+     (quadro estreito), eles vão para a direita. */
+  #area { position: absolute; left: 16px; bottom: 14px; margin: 0; padding: 4px 10px 5px; border-radius: 10px;
+    background: rgba(244, 239, 232, .82); pointer-events: none; }
+  #area[hidden] { display: none; }
+  #area span { display: block; color: var(--muted); font: 10px/1.3 Arial, Helvetica, sans-serif;
+    letter-spacing: .1em; text-transform: uppercase; }
+  #area strong { display: block; font-size: 18px; line-height: 1.2; font-weight: 400; white-space: nowrap; }
+  .v3d.barra-direita .rodape { align-items: flex-end; }
+  .v3d.sem-area #area { display: none; }
+
+  /* Convite: frase curta acima dos botões e pulso no próximo botão, uma cor a cada pulso
+     (cores do portfólio). Tudo para no clique em um botão de cena e recomeça na volta à primeira cena. */
+  .pilula.pulsa { animation: v3dPulso 1.4s ease-out; }
+  @keyframes v3dPulso {
+    0%   { box-shadow: 0 0 0 0 rgba(var(--pulso, 109, 40, 217), .65); border-color: rgba(var(--pulso, 109, 40, 217), .95); }
+    75%  { box-shadow: 0 0 0 11px rgba(var(--pulso, 109, 40, 217), 0); border-color: rgba(var(--pulso, 109, 40, 217), .5); }
+    100% { box-shadow: 0 0 0 11px rgba(var(--pulso, 109, 40, 217), 0); }
+  }
+  .v3d.com-convite #dica { display: block; color: var(--text); }
+  @media (prefers-reduced-motion: reduce) { .pilula.pulsa { animation: none; } }
+
+  /* Cômodos clicáveis (cena Planta) */
+  #comodos { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .15s ease; }
+  #comodos.visivel { opacity: 1; transition: opacity .4s ease .7s; }
+  .comodo { position: absolute; left: 0; top: 0; padding: 6px 11px 7px; border-radius: 12px;
+    border: 1px solid var(--purple-dark); background: var(--vidro); color: var(--text);
+    font-size: 14px; line-height: 1.15; text-align: center; white-space: nowrap; cursor: pointer;
+    pointer-events: none; transition: background .2s ease, color .2s ease; }
+  #comodos.visivel .comodo { pointer-events: auto; }
+  .comodo span { display: block; margin-top: 2px; color: var(--muted);
+    font: 11.5px/1.2 Arial, Helvetica, sans-serif; }
+  .comodo:hover { background: var(--purple-dark); color: var(--bg); }
+  .comodo:hover span { color: inherit; }
+
+  /* Legenda das hachuras (cena Implantação) */
+  #legenda { position: absolute; left: 0; top: 0; width: min(310px, calc(100% - 32px));
+    padding: 16px 18px 14px; border: 1px solid var(--line); border-radius: 18px; background: var(--vidro);
+    opacity: 0; visibility: hidden; transition: opacity .15s ease, visibility 0s linear .15s; }
+  #legenda.visivel { opacity: 1; visibility: visible; transition: opacity .45s ease .55s; }
+  #legenda h2 { margin: 0; font-size: 22px; font-weight: 400; letter-spacing: -.02em; }
+  #legenda p { margin: 5px 0 12px; color: var(--muted); font: 12.5px/1.4 Arial, Helvetica, sans-serif; }
+  #legenda ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+  #legenda li { display: grid; grid-template-columns: 34px 1fr; gap: 11px; align-items: center; }
+  #legenda .amostra { width: 34px; height: 34px; border: 1px solid var(--text); background-size: 17px 17px; }
+  #legenda strong { display: block; font-size: 15px; font-weight: 400; }
+  #legenda small { display: block; color: var(--muted); font: 12.5px/1.35 Arial, Helvetica, sans-serif; }
+
+  /* Planta baixa ampliada (só quando o viewer é aberto fora do portfólio) */
+  #desenho { position: fixed; inset: 0; z-index: 200; display: none; place-items: center;
+    padding: 70px 16px 24px; background: rgba(247, 242, 236, .96); color: var(--text);
+    font-family: Georgia, "Times New Roman", serif; }
+  #desenho.aberto { display: grid; }
+  #desenhoTitulo { position: absolute; top: 26px; left: 16px; right: 80px; margin: 0; color: var(--muted);
+    font: 13px/1.3 Arial, Helvetica, sans-serif; }
+  #desenhoFechar { position: absolute; top: 14px; right: 16px; }
+  #desenhoQuadro { position: relative; width: min(100%, 1220px); height: min(78vh, 820px);
+    border: 1px solid var(--line); overflow: hidden; }
+  #desenhoQuadro img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
+
+  #falha { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 24px;
+    text-align: center; font-size: 18px; }
+  #ajuste { position: absolute; top: 64px; left: 12px; z-index: 5; width: min(380px, calc(100% - 24px));
+    max-height: 55%; overflow: auto; margin: 0; padding: 10px 12px; border-radius: 8px;
+    background: rgba(23, 18, 23, .88); color: #f4efe8; white-space: pre-wrap;
+    font: 11px/1.5 Consolas, Menlo, monospace; }
+  #ajuste[hidden] { display: none; }
+
+  /* Tamanhos menores. As classes são postas pelo motor conforme o tamanho do quadro
+     (não da tela), para valer também dentro da página do projeto. */
+  .v3d.estreito .pilula { min-height: 40px; padding: 0 13px; font-size: 15px; }
+  .v3d.estreito .barra { gap: 6px; }
+  .v3d.estreito #area { left: 12px; padding: 3px 8px 4px; }
+  .v3d.estreito #area strong { font-size: 16px; }
+  .v3d.estreito .comodo { padding: 5px 8px 6px; font-size: 12.5px; }
+  .v3d.estreito .comodo span { font-size: 10.5px; }
+  .v3d.estreito #legenda { padding: 13px 15px 12px; }
+  .v3d.estreito #legenda h2 { font-size: 19px; }
+  /* Quadro baixo ou muito estreito (o da página do projeto): legenda compacta, sem a dica e sem o
+     subtítulo da legenda, para sobrar espaço para o desenho. */
+  .v3d.compacto #dica, .v3d.compacto #legenda p { display: none; }
+  .v3d.compacto #legenda { width: min(270px, calc(100% - 32px)); padding: 10px 14px; }
+  .v3d.compacto #legenda h2 { margin-bottom: 7px; font-size: 18px; }
+  .v3d.compacto #legenda ul { gap: 6px; }
+  .v3d.compacto #legenda li { grid-template-columns: 26px 1fr; gap: 9px; }
+  .v3d.compacto #legenda .amostra { width: 26px; height: 26px; background-size: 13px 13px; }
+  .v3d.compacto #legenda strong { font-size: 14px; }
+  .v3d.compacto #legenda small { font-size: 12px; }
+  /* Quadro bem baixo (quadro deitado na página, celular deitado): some a área dos cômodos
+     e os botões ficam menores. */
+  .v3d.mini .rodape { bottom: 10px; }
+  .v3d.mini #area { bottom: 10px; padding: 2px 8px 3px; }
+  .v3d.mini #area span { font-size: 9px; }
+  .v3d.mini #area strong { font-size: 15px; }
+  .v3d.mini .pilula { min-height: 36px; padding: 0 15px; font-size: 15px; }
+  .v3d.mini .topo { top: 10px; left: 12px; right: 12px; }
+  .v3d.mini #aviso { padding: 5px 10px; font-size: 11px; }
+  .v3d.mini .comodo { padding: 2px 7px 3px; border-radius: 9px; font-size: 11.5px; }
+  .v3d.mini .comodo span { display: none; }
+  /* Quadro baixo com a legenda embaixo do terreno (celular): legenda enxuta, uma linha por item,
+     para sobrar espaço para o desenho. */
+  .v3d.legenda-curta #legenda { width: min(330px, calc(100% - 24px)); padding: 7px 12px; }
+  .v3d.legenda-curta #legenda h2 { display: none; }
+  .v3d.legenda-curta #legenda ul { gap: 4px; }
+  .v3d.legenda-curta #legenda li { grid-template-columns: 18px 1fr; gap: 8px; }
+  .v3d.legenda-curta #legenda .amostra { width: 18px; height: 18px; background-size: 9px 9px; }
+  .v3d.legenda-curta #legenda strong, .v3d.legenda-curta #legenda small { display: inline; }
+  .v3d.legenda-curta #legenda strong { margin-right: 6px; font-size: 13px; }
+  .v3d.legenda-curta #legenda small { font-size: 11.5px; }
+  /* No quadro pequeno a dica normal fica escondida, mas a frase do convite aparece. */
+  .v3d.compacto.com-convite #dica { display: block; padding: 2px 9px; font-size: 11.5px; }
+  /* Quadro bem estreito: botões das cenas mais justos, para caberem em uma linha. */
+  .v3d.fino .pilula { padding: 0 9px; font-size: 14px; }
+  .v3d.fino .barra { gap: 4px; }
+  .v3d.fino.mini .comodo { padding: 2px 5px 3px; font-size: 10.5px; }
+</style>
+</head>
+<body>
+<div class="v3d" id="v3d">
+  <canvas id="c" aria-label="Modelo 3D do projeto"></canvas>
+
+  <div class="topo" id="topo">
+    <a class="pilula" id="voltar" href="index.html">Voltar ao portfólio</a>
+    <p id="aviso"></p>
+  </div>
+
+  <div id="comodos"></div>
+  <aside id="legenda" aria-hidden="true"></aside>
+
+  <div class="rodape" id="rodape">
+    <p id="dica"></p>
+    <div class="barra" id="barra"></div>
+  </div>
+  <p id="area" hidden></p>
+
+  <pre id="ajuste" hidden></pre>
+</div>
+
+<div id="desenho" aria-hidden="true">
+  <p id="desenhoTitulo"></p>
+  <button class="pilula" type="button" id="desenhoFechar">Fechar</button>
+  <div id="desenhoQuadro"><img id="desenhoImg" alt=""></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+/* =====================================================================
+   1) CONFIGURAÇÃO — é aqui que você mexe
+   ===================================================================== */
+/* ATENÇÃO — este arquivo está PRONTO PARA RECEBER o modelo do projeto "Reforma Unifamiliar", mas ainda sem ele.
+   As cenas, os cômodos e a implantação abaixo são os da casa de teste (casa de 5 × 8 m num
+   terreno de 10 × 10 m). Quando o .glb do projeto chegar, estes valores são trocados pelos dele.
+   Enquanto isso, o quadro fica desligado no index.html (linhas "modelo3d" comentadas). */
+const CONFIG = {
+  modelo: 'assets/reforma-modelo.glb',   // arquivo exportado do SketchUp. Enquanto ele não existir, aparece a casa de teste.
+  voltar: 'index.html',          // link do botão "Voltar ao portfólio" (use '' para esconder)
+  bordas: false,                 // true = contornos estilo SketchUp no seu modelo (pesa em modelos grandes)
+  duracao: 1200,                 // milissegundos de cada transição
+  nivel: 0,                      // altura (y) do piso/terreno no modelo. No SketchUp, normalmente 0.
+
+  /* ÁREA — aparece no canto de baixo, à esquerda, para o visitante ter noção do tamanho.
+     Use o mesmo valor da linha 'Área' do projeto no index.html. '' = não mostra. */
+  area: '150 m²',
+
+  /* CONVITE — frase curta que aparece acima dos botões até o visitante clicar em um deles.
+     Junto com ela, o botão da próxima cena pulsa, uma cor a cada pulso. '' = sem frase e sem pulso.
+     Depois do clique os dois param; voltam sempre que o visitante retorna à primeira cena.
+     Escreva começando com "Toque": no computador o viewer troca sozinho por "Clique". */
+  convite: 'Toque nos botões para trocar de vista',
+
+  /* CENAS — cada cena é um "slide" do Morph e vira um botão.
+     Clicar de novo no botão da cena em que você está recentra a vista.
+     camera.giro   : rotação horizontal em radianos (0 = de frente)
+     camera.altura : 0 = vista de topo, 1.5 = quase na horizontal
+     camera.zoom   : 1 = enquadra o modelo inteiro na tela; menor = mais perto
+     camera.foco   : opcional. [x1, z1, x2, z2] em metros: enquadra só esse retângulo
+                     (por exemplo, a casa) em vez do modelo inteiro. Num quadro bem
+                     baixo e deitado, a vista gira 90° quando assim o retângulo
+                     aparece maior.
+     nos           : peças que mudam, pelo NOME do grupo/componente no SketchUp
+                     (na exportação, espaço vira "_": "Bloco A" fica "Bloco_A")
+        mover     : [x, y, z] deslocamento em fração do tamanho do modelo (0.1 = 10%)
+        escala    : [x, y, z] multiplicador (1 = igual; 0.5 = metade)
+        opacidade : 0 = some, 1 = aparece (o padrão é 1)
+     comodos: true      -> mostra os botões dos cômodos (lista "comodos" abaixo)
+     implantacao: true  -> vista superior travada, com hachuras e legenda
+                           (nessa cena, só camera.giro vale: gira o desenho na tela)
+     Peças não citadas ficam como estão no modelo. Não cite um grupo e uma peça
+     de dentro dele na mesma cena. */
+  cenas: [
+    { nome: 'Fachada',
+      camera: { giro: 0.62, altura: 1.1, zoom: 1 },
+      nos: {} },
+
+    { nome: 'Planta',
+      camera: { giro: 0.3, altura: 0.4, zoom: 1.1, foco: [-2.5, -4.5, 2.5, 3.5] },
+      comodos: true,
+      nos: {
+        'Telhado': { mover: [0, 0.45, 0], opacidade: 0 },   // sobe e some
+        'Paredes': { escala: [1, 0.36, 1] }                 // baixam para mostrar os ambientes
+      } },
+
+    { nome: 'Implantação',
+      implantacao: true,
+      nos: {
+        'Telhado': { mover: [0, 0.45, 0], opacidade: 0 },
+        'Paredes': { escala: [1, 0.36, 1], opacidade: 0 },
+        'Pisos':   { opacidade: 0 }
+      } }
+  ],
+
+  /* CÔMODOS — botões que aparecem na cena com "comodos: true".
+     pos: [x, z] do centro do cômodo, em metros, nas coordenadas do modelo.
+     area: opcional, em m² (sem ela, o botão mostra só o nome).
+     Para descobrir as coordenadas, abra este arquivo com ?ajuste=1 no fim do endereço e clique no ponto. */
+  comodos: [
+    { nome: 'Sala e cozinha', area: 19,  pos: [0, 1.6] },
+    { nome: 'Banheiro',       area: 2.5, pos: [-1.61, -1.0] },
+    { nome: 'Circulação',     area: 4.5, pos: [0.89, -1.0] },
+    { nome: 'Quarto 1',       area: 7,   pos: [-1.25, -3.1] },
+    { nome: 'Quarto 2',       area: 7,   pos: [1.25, -3.1] }
+  ],
+
+  /* DESENHO — o que abre ao tocar em um cômodo.
+     indice : posição do desenho na lista "drawings" do projeto no index.html (0 = o primeiro)
+     src, titulo, fundo : usados só quando o viewer é aberto fora do portfólio */
+  desenho: {
+    indice: 0,
+    titulo: 'Planta baixa',
+    src: 'assets/reforma-planta-baixa.jpg',   // ainda não existe: entra junto com o modelo
+    fundo: '#ffffff'
+  },
+
+  /* IMPLANTAÇÃO — retângulos em metros, nas coordenadas do modelo: [x1, z1, x2, z2].
+     A área permeável é calculada: terreno menos construída menos impermeável.
+     As áreas e porcentagens da legenda também são calculadas a partir daqui,
+     então os retângulos não podem se sobrepor. */
+  implantacao: {
+    terreno: [-5, -5, 5, 5],
+    construida: [ [-2.5, -4.5, 2.5, 3.5] ],
+    impermeavel: [ { nome: 'Calçada', ret: [-0.45, 3.5, 0.45, 5] } ],
+    hachuras: {
+      construida:  { nome: 'Área construída', tipo: 'diagonal',   linha: '#6d28d9', fundo: '#f1eaff' },
+      permeavel:   { nome: 'Área permeável',  tipo: 'cruzada',    linha: '#14532D', fundo: '#DCFCE7' },
+      impermeavel: { tipo: 'horizontal', linha: '#6e6372', fundo: '#e9e3dc' }
+    }
+  }
+};
+
+/* =====================================================================
+   2) MOTOR — só mexa se quiser mudar o comportamento
+   ===================================================================== */
+(function () {
+'use strict';
+const $ = id => document.getElementById(id);
+const raizEl = $('v3d'), canvas = $('c'), avisoEl = $('aviso'), dicaEl = $('dica'), barra = $('barra');
+const comodosEl = $('comodos'), legendaEl = $('legenda'), desenhoEl = $('desenho'), areaEl = $('area');
+const parametros = new URLSearchParams(location.search);
+const embutido = window.parent !== window && parametros.has('embutido');   // dentro da página do projeto
+const modoAjuste = parametros.has('ajuste');
+const toque = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
+
+/* "No quadro" = dentro do quadro da página do projeto, sem ampliar. Ali o visualizador não prende
+   a rolagem: a rodinha só aproxima depois que o mouse se mexe em cima do modelo, e no celular o
+   dedo na vertical rola a página. Ampliado, ou aberto direto, o controle é total. */
+let noQuadro = embutido || !!(window.VIEWER3D && window.VIEWER3D.quadro);
+
+if (embutido || !CONFIG.voltar) $('voltar').style.display = 'none';
+else $('voltar').href = CONFIG.voltar;
+
+function falha(texto) {
+  canvas.style.display = 'none'; $('rodape').style.display = 'none';
+  const p = document.createElement('p'); p.id = 'falha'; p.textContent = texto;
+  raizEl.appendChild(p);
+}
+if (!window.THREE) { falha('O visualizador 3D não carregou. Confira a internet e recarregue a página.'); return; }
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); }
+catch (erro) { falha('Este navegador não conseguiu abrir o 3D. Tente em outro navegador ou aparelho.'); return; }
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(40, 1, 0.1, 1000);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xcfc4b6, 0.62));
+const sol = new THREE.DirectionalLight(0xffffff, 0.5);
+sol.position.set(6, 10, 7);
+scene.add(sol);
+
+const lerp = (a, b, t) => a + (b - a) * t;
+const limitar = (v, a, b) => Math.max(a, Math.min(b, v));
+const ease = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const menorVolta = d => d - 2 * Math.PI * Math.round(d / (2 * Math.PI));   // gira sempre pelo caminho mais curto
+const num = v => (Math.round(v * 100) / 100).toLocaleString('pt-BR');
+const corLinear = hex => new THREE.Color(hex).convertSRGBToLinear();
+
+/* --- câmera orbital: alvo + ângulos + distância --- */
+const alvo = new THREE.Vector3(), centro = new THREE.Vector3(), metade = new THREE.Vector3(5, 5, 5);
+let giro = 0.7, altura = 1, dist = 20;
+let tamanho = 10, distCena = 20;
+let travado = false;     // cena de implantação: sem rotação
+let camLivre = false;    // a pessoa mexeu na câmera depois da última cena
+let sujo = true;         // precisa redesenhar
+let pronto = false;
+
+function atualizarCamera() {
+  const s = Math.sin(altura), c = Math.cos(altura);
+  cam.position.set(alvo.x + dist * s * Math.sin(giro), alvo.y + dist * c, alvo.z + dist * s * Math.cos(giro));
+  cam.rotation.set(altura - Math.PI / 2, giro, 0, 'YXZ');   // funciona até na vista de topo exata
+  cam.updateMatrixWorld();
+}
+function eixosDaTela() {
+  return { dir: new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0),
+           cima: new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1),
+           k: dist * 2 * Math.tan(cam.fov * Math.PI / 360) / canvas.clientHeight };   // metros por pixel
+}
+function deslocar(dx, dy) {
+  const e = eixosDaTela();
+  alvo.addScaledVector(e.dir, -dx * e.k).addScaledVector(e.cima, dy * e.k);
+  const m = tamanho * 1.2;
+  alvo.set(limitar(alvo.x, centro.x - m, centro.x + m), limitar(alvo.y, centro.y - m, centro.y + m),
+           limitar(alvo.z, centro.z - m, centro.z + m));
+}
+function orbitar(dx, dy) {
+  if (travado) { deslocar(dx, dy); return; }
+  giro -= dx * 0.006;
+  altura = limitar(altura - dy * 0.006, 0, Math.PI / 2 - 0.02);
+}
+function zoom(f, px, py) {   // px, py: posição do cursor em relação ao centro do quadro (o zoom vai até ele)
+  const e = eixosDaTela(), antes = dist;
+  dist = limitar(dist * f, Math.min(tamanho * 0.15, distCena * 0.2), Math.max(tamanho * 8, distCena * 3));
+  const r = 1 - dist / antes;
+  if (px || py) alvo.addScaledVector(e.dir, px * e.k * r).addScaledVector(e.cima, -py * e.k * r);
+}
+
+/* --- controles: arrastar = girar | Shift + arrastar (ou botão direito) = deslocar
+       | scroll = zoom | dois dedos = pinça + deslocar --- */
+const dedos = {};
+let apertou = null;
+let mouseNoModelo = false, ultimoMouse = null, rodaLivre = -1e9;   // usados só "no quadro" (ver noQuadro)
+const cameraOcupada = () => !!(anim && anim.cam && travado);   // chegando na vista superior: espera terminar
+function soltarCamera() { camLivre = true; if (anim) anim.cam = false; sujo = true; }
+function definirQuadro(valor) {
+  noQuadro = !!valor;
+  canvas.style.touchAction = noQuadro ? 'pan-y' : 'none';
+  mouseNoModelo = false; ultimoMouse = null;
+}
+definirQuadro(noQuadro);
+
+canvas.addEventListener('pointerdown', e => {
+  canvas.setPointerCapture(e.pointerId);
+  dedos[e.pointerId] = { x: e.clientX, y: e.clientY };
+  apertou = { x: e.clientX, y: e.clientY };
+  mouseNoModelo = true;
+});
+canvas.addEventListener('pointermove', e => {
+  if (e.pointerType === 'mouse') {   // só conta mouse que se mexeu de verdade, não a página rolando embaixo dele
+    if (ultimoMouse && (ultimoMouse.x !== e.screenX || ultimoMouse.y !== e.screenY)) mouseNoModelo = true;
+    ultimoMouse = { x: e.screenX, y: e.screenY };
+  }
+  const p = dedos[e.pointerId];
+  if (!p) return;
+  const ids = Object.keys(dedos);
+  const dx = e.clientX - p.x;
+  // No quadro, um dedo na vertical é da página (rolagem): só o movimento horizontal mexe no modelo.
+  const dy = noQuadro && e.pointerType === 'touch' && ids.length === 1 ? 0 : e.clientY - p.y;
+  if ((!dx && !dy) || cameraOcupada()) { p.x = e.clientX; p.y = e.clientY; return; }
+  if (ids.length === 1) {
+    if (e.shiftKey || (e.buttons & 6)) deslocar(dx, dy); else orbitar(dx, dy);
+  } else {
+    const outro = dedos[ids.find(i => Number(i) !== e.pointerId)];
+    const d0 = Math.hypot(p.x - outro.x, p.y - outro.y);
+    const d1 = Math.hypot(e.clientX - outro.x, e.clientY - outro.y);
+    if (d0 > 0 && d1 > 0) zoom(d0 / d1);
+    deslocar(dx / 2, dy / 2);
+  }
+  p.x = e.clientX; p.y = e.clientY;
+  soltarCamera();
+});
+const soltar = e => {
+  delete dedos[e.pointerId];
+  if (modoAjuste && apertou && e.type === 'pointerup' &&
+      Math.hypot(e.clientX - apertou.x, e.clientY - apertou.y) < 5) lerPonto(e);
+};
+canvas.addEventListener('pointerup', soltar);
+canvas.addEventListener('pointercancel', soltar);
+canvas.addEventListener('pointerleave', () => { mouseNoModelo = false; ultimoMouse = null; });
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+canvas.addEventListener('wheel', e => {
+  const agora = performance.now();
+  if (noQuadro && !e.ctrlKey && (!mouseNoModelo || agora - rodaLivre < 300)) { rodaLivre = agora; return; }   // deixa a página rolar
+  e.preventDefault();
+  if (cameraOcupada()) return;
+  const r = canvas.getBoundingClientRect();
+  zoom(Math.exp(e.deltaY * (e.deltaMode === 1 ? 0.04 : 0.001)),
+       e.clientX - r.left - r.width / 2, e.clientY - r.top - r.height / 2);
+  soltarCamera();
+}, { passive: false });
+
+/* --- peças que se transformam (só as citadas nas cenas) --- */
+const nos = {};
+let faltando = [];
+function prepararNos(raiz) {
+  const citadas = {};
+  CONFIG.cenas.forEach(c => Object.keys(c.nos || {}).forEach(nome => {
+    citadas[nome] = citadas[nome] || ('opacidade' in c.nos[nome]);
+  }));
+  raiz.traverse(o => {
+    if (!o.name || !(o.name in citadas) || nos[o.name]) return;
+    const n = nos[o.name] = { obj: o, p0: o.position.clone(), s0: o.scale.clone(), mats: [], op: 1 };
+    if (!citadas[o.name]) return;
+    // Peça que some: ganha materiais próprios, para a transparência não vazar para outras peças.
+    const copia = m => {
+      const c = m.clone();
+      c.userData = { op0: m.opacity, tr0: m.transparent };
+      n.mats.push(c);
+      return c;
+    };
+    o.traverse(f => {
+      if (f.material) f.material = Array.isArray(f.material) ? f.material.map(copia) : copia(f.material);
+    });
+  });
+  faltando = Object.keys(citadas).filter(nome => !nos[nome]);
+  if (faltando.length) console.warn('Peças citadas nas cenas e não encontradas no modelo:', faltando.join(', '));
+}
+function aplicarOpacidade(n, op) {
+  n.op = op;
+  n.obj.visible = op > 0.004;
+  n.mats.forEach(m => {
+    const transparente = m.userData.tr0 || op < 0.999;
+    if (m.transparent !== transparente) { m.transparent = transparente; m.needsUpdate = true; }
+    m.opacity = m.userData.op0 * op;
+  });
+}
+function estadoDaCena(i) {
+  const cena = CONFIG.cenas[i], r = {};
+  for (const nome in nos) {
+    const n = nos[nome], a = (cena.nos || {})[nome] || {};
+    const m = a.mover || [0, 0, 0], e = a.escala || [1, 1, 1];
+    const delta = new THREE.Vector3(m[0], m[1], m[2]).multiplyScalar(tamanho);
+    if (n.obj.parent) {
+      n.obj.parent.updateMatrixWorld(true);
+      const inv = new THREE.Matrix4().copy(n.obj.parent.matrixWorld).invert();
+      delta.applyMatrix3(new THREE.Matrix3().setFromMatrix4(inv));
+    }
+    r[nome] = { p: n.p0.clone().add(delta),
+                s: new THREE.Vector3(n.s0.x * e[0], n.s0.y * e[1], n.s0.z * e[2]),
+                o: a.opacidade === undefined ? 1 : a.opacidade };
+  }
+  return r;
+}
+
+/* --- câmera de cada cena --- */
+function areaLivre() {   // parte do quadro que sobra entre o topo e os botões de baixo
+  const q = canvas.getBoundingClientRect();
+  return { W: q.width, H: q.height, margem: 16,
+           topo: Math.max($('topo').getBoundingClientRect().bottom - q.top, 0) + 10,
+           base: q.bottom - $('rodape').getBoundingClientRect().top + 10 };
+}
+/* Encaixa uma caixa (o modelo inteiro ou o retângulo "foco" da cena) na área livre, para um ângulo.
+   Testa a câmera, mede onde os cantos caem na tela e corrige distância e alvo algumas vezes. */
+const camAux = new THREE.PerspectiveCamera(), pontoAux = new THREE.Vector3();
+function encaixar(meio, meia, g, a, L) {
+  const cantos = [];
+  for (let i = 0; i < 8; i++) cantos.push(new THREE.Vector3(
+    meio.x + (i & 1 ? meia.x : -meia.x), meio.y + (i & 2 ? meia.y : -meia.y), meio.z + (i & 4 ? meia.z : -meia.z)));
+  const dir = new THREE.Vector3(Math.cos(g), 0, -Math.sin(g));                                              // direita da tela
+  const cima = new THREE.Vector3(-Math.sin(g) * Math.cos(a), Math.sin(a), -Math.cos(g) * Math.cos(a));      // cima da tela
+  const livreW = L.W - 2 * L.margem, livreH = L.H - L.topo - L.base;
+  const t = meio.clone();
+  let d = tamanho * 6;
+  camAux.fov = cam.fov; camAux.aspect = cam.aspect; camAux.near = cam.near; camAux.far = cam.far;
+  camAux.updateProjectionMatrix();
+  for (let vez = 0; vez < 6; vez++) {
+    camAux.position.set(t.x + d * Math.sin(a) * Math.sin(g), t.y + d * Math.cos(a), t.z + d * Math.sin(a) * Math.cos(g));
+    camAux.rotation.set(a - Math.PI / 2, g, 0, 'YXZ');
+    camAux.updateMatrixWorld();
+    let x1 = Infinity, x2 = -Infinity, y1 = Infinity, y2 = -Infinity;
+    cantos.forEach(p => {
+      pontoAux.copy(p).project(camAux);
+      const x = (pontoAux.x * 0.5 + 0.5) * L.W, y = (-pontoAux.y * 0.5 + 0.5) * L.H;
+      x1 = Math.min(x1, x); x2 = Math.max(x2, x); y1 = Math.min(y1, y); y2 = Math.max(y2, y);
+    });
+    const k = d * 2 * Math.tan(cam.fov * Math.PI / 360) / L.H;   // metros por pixel na distância do alvo
+    t.addScaledVector(dir, ((x1 + x2) / 2 - L.W / 2) * k).addScaledVector(cima, -((y1 + y2) / 2 - (L.topo + livreH / 2)) * k);
+    d *= Math.max((x2 - x1) / Math.max(livreW, 50), (y2 - y1) / Math.max(livreH, 50)) / 0.95;
+  }
+  return { d: d, t: t };
+}
+function cameraDaCena(cena) {
+  if (cena.implantacao && implantacao) return comporImplantacao(cena);
+  const c = cena.camera || {}, f = c.foco, L = areaLivre();
+  const a = c.altura === undefined ? 1 : c.altura;
+  let g = c.giro === undefined ? 0.7 : c.giro;
+  const meio = f ? new THREE.Vector3((f[0] + f[2]) / 2, CONFIG.nivel || 0, (f[1] + f[3]) / 2) : centro.clone();
+  const meia = f ? new THREE.Vector3(Math.abs(f[2] - f[0]) / 2, 0, Math.abs(f[3] - f[1]) / 2) : metade;
+  let r = encaixar(meio, meia, g, a, L);
+  if (f && raizEl.classList.contains('mini')) {   // quadro baixo: deita a vista se o foco couber maior assim
+    const deitado = encaixar(meio, meia, g + Math.PI / 2, a, L);
+    if (deitado.d < r.d * 0.9) { g += Math.PI / 2; r = deitado; }
+  }
+  return { g: g, a: a, d: r.d * (c.zoom || 1), t: r.t };
+}
+/* Vista superior: encaixa o terreno e a legenda juntos no quadro.
+   Quadro deitado: terreno à esquerda, legenda à direita. Quadro em pé: legenda logo abaixo do terreno. */
+function comporImplantacao(cena) {
+  const t = CONFIG.implantacao.terreno, g = (cena.camera || {}).giro || 0;
+  const lx = Math.abs(t[2] - t[0]), lz = Math.abs(t[3] - t[1]);
+  const lt = Math.abs(Math.cos(g)) * lx + Math.abs(Math.sin(g)) * lz;   // largura do terreno na tela, em metros
+  const at = Math.abs(Math.sin(g)) * lx + Math.abs(Math.cos(g)) * lz;   // altura do terreno na tela, em metros
+  const L = areaLivre(), W = L.W, H = L.H, margem = L.margem, topo = L.topo, base = L.base;
+  const vao = raizEl.classList.contains('compacto') ? 14 : 26;   // respiro entre o terreno e a legenda
+  const aoLado = W >= 480 && W > H * 1.25;
+  raizEl.classList.toggle('legenda-curta', !aoLado && H <= 420);   // quadro baixo com a legenda embaixo: legenda enxuta
+  const lw = legendaEl.offsetWidth, lh = legendaEl.offsetHeight;
+  const cabeW = aoLado ? W - 2 * margem - vao - lw : W - 2 * margem;
+  const cabeH = aoLado ? H - topo - base : H - topo - base - vao - lh;
+  const ppm = Math.max(Math.min(cabeW / lt, cabeH / at), 0.5);          // pixels por metro
+  const tw = lt * ppm, th = at * ppm;
+  let cx, cy, legX, legY;
+  if (aoLado) {
+    const inicio = (W - (tw + vao + lw)) / 2;
+    cx = inicio + tw / 2; cy = topo + (H - topo - base) / 2;
+    legX = inicio + tw + vao; legY = cy - lh / 2;
+  } else {
+    const inicio = topo + Math.max(0, (H - topo - base - (th + vao + lh)) / 2);
+    cx = W / 2; cy = inicio + th / 2;
+    legX = (W - lw) / 2; legY = inicio + th + vao;
+  }
+  legendaEl.style.left = Math.round(legX) + 'px';
+  legendaEl.style.top = Math.round(Math.max(legY, aoLado ? 8 : topo)) + 'px';
+  const ox = (cx - W / 2) / ppm, oy = (cy - H / 2) / ppm;                // onde o centro do terreno cai na tela
+  const alvoCena = new THREE.Vector3((t[0] + t[2]) / 2, CONFIG.nivel || 0, (t[1] + t[3]) / 2)
+    .addScaledVector(new THREE.Vector3(Math.cos(g), 0, -Math.sin(g)), -ox)
+    .addScaledVector(new THREE.Vector3(Math.sin(g), 0, Math.cos(g)), -oy);
+  return { g: g, a: 0, d: H / (2 * ppm * Math.tan(cam.fov * Math.PI / 360)), t: alvoCena };
+}
+
+/* --- transição Morph --- */
+let cenaAtual = 0, anim = null;
+function irParaCena(i, duracao) {
+  const cena = CONFIG.cenas[i];
+  cenaAtual = i;
+  travado = !!(cena.implantacao && implantacao);
+  camLivre = false;
+  atualizarInterface();   // antes da câmera: a altura da dica entra na conta do enquadramento
+  const de = {}, para = estadoDaCena(i);
+  for (const nome in nos) de[nome] = { p: nos[nome].obj.position.clone(), s: nos[nome].obj.scale.clone(), o: nos[nome].op };
+  const cDe = { g: giro, a: altura, d: dist, t: alvo.clone() }, cPara = cameraDaCena(cena);
+  cPara.g = cDe.g + menorVolta(cPara.g - cDe.g);
+  distCena = cPara.d;
+  anim = { t0: null, dur: duracao === undefined ? CONFIG.duracao : duracao, de: de, para: para,
+           cDe: cDe, cPara: cPara, cam: true,
+           hDe: implantacao ? implantacao.op : 0, hPara: travado ? 1 : 0 };
+}
+function passo(ts) {
+  const a = anim;
+  if (a.t0 === null) a.t0 = ts;
+  const f = a.dur > 0 ? Math.min((ts - a.t0) / a.dur, 1) : 1, k = ease(f);
+  for (const nome in nos) {
+    const n = nos[nome], d = a.de[nome], p = a.para[nome];
+    n.obj.position.lerpVectors(d.p, p.p, k);
+    n.obj.scale.lerpVectors(d.s, p.s, k);
+    // Quem some termina de sumir antes do fim do movimento; quem volta começa a aparecer um pouco depois.
+    if (n.mats.length) aplicarOpacidade(n, lerp(d.o, p.o, p.o < d.o ? Math.min(k / 0.8, 1) : Math.max((k - 0.2) / 0.8, 0)));
+  }
+  if (a.cam) {
+    giro = lerp(a.cDe.g, a.cPara.g, k); altura = lerp(a.cDe.a, a.cPara.a, k);
+    dist = lerp(a.cDe.d, a.cPara.d, k); alvo.lerpVectors(a.cDe.t, a.cPara.t, k);
+  }
+  if (implantacao) opacidadeDasHachuras(lerp(a.hDe, a.hPara, k));
+  if (f >= 1) anim = null;
+}
+
+/* --- implantação: hachuras no chão + legenda --- */
+let implantacao = null;
+function ladrilho(estilo) {   // desenho que se repete para formar a hachura
+  const n = 128, tela = document.createElement('canvas');
+  tela.width = tela.height = n;
+  const g = tela.getContext('2d');
+  g.fillStyle = estilo.fundo; g.fillRect(0, 0, n, n);
+  g.strokeStyle = estilo.linha; g.lineWidth = n * 0.075; g.lineCap = 'square';
+  const risco = (x1, y1, x2, y2) => { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); };
+  if (estilo.tipo === 'diagonal' || estilo.tipo === 'cruzada') for (let k = -1; k <= 1; k++) risco(k * n, n, k * n + n, 0);
+  if (estilo.tipo === 'cruzada') for (let k = -1; k <= 1; k++) risco(k * n, 0, k * n + n, n);
+  if (estilo.tipo === 'horizontal') { risco(0, n * 0.25, n, n * 0.25); risco(0, n * 0.75, n, n * 0.75); }
+  return tela;
+}
+function criarImplantacao() {
+  const imp = CONFIG.implantacao;
+  if (!imp || !imp.terreno) return;
+  const t = imp.terreno, y = (CONFIG.nivel || 0) + tamanho * 0.004;
+  const est = Object.assign({
+    construida:  { nome: 'Área construída', tipo: 'diagonal',   linha: '#6d28d9', fundo: '#f1eaff' },
+    permeavel:   { nome: 'Área permeável',  tipo: 'cruzada',    linha: '#14532D', fundo: '#DCFCE7' },
+    impermeavel: { tipo: 'horizontal', linha: '#6e6372', fundo: '#e9e3dc' }
+  }, imp.hachuras);
+  const construida = imp.construida || [], impermeavel = imp.impermeavel || [];
+  const area = r => Math.abs((r[2] - r[0]) * (r[3] - r[1]));
+  const cantos = r => [[r[0], r[1]], [r[2], r[1]], [r[2], r[3]], [r[0], r[3]]];
+  const lado = Math.max(Math.abs(t[2] - t[0]), Math.abs(t[3] - t[1])) / 20;   // tamanho de um ladrilho da hachura, em metros
+  const grupo = new THREE.Group(), mats = [];
+  grupo.visible = false;
+
+  // Shape em (x, -z): depois de deitar a geometria no chão, vira (x, z) do modelo.
+  const contorno = r => cantos(r).map(c => new THREE.Vector2(c[0], -c[1]));
+  const hachura = (forma, estilo) => {
+    const tela = ladrilho(estilo), tex = new THREE.CanvasTexture(tela);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(1 / lado, 1 / lado);
+    tex.encoding = THREE.sRGBEncoding;
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0, depthTest: false, side: THREE.DoubleSide });
+    const geo = new THREE.ShapeGeometry(forma);
+    geo.rotateX(-Math.PI / 2);
+    const malha = new THREE.Mesh(geo, mat);
+    malha.position.y = y; malha.renderOrder = 5;
+    grupo.add(malha); mats.push(mat);
+    return tela;
+  };
+  const linhaMat = new THREE.LineBasicMaterial({ color: corLinear('#171217'), transparent: true, opacity: 0, depthTest: false });
+  mats.push(linhaMat);
+  const moldura = r => {
+    const pts = cantos(r).map(c => new THREE.Vector3(c[0], y, c[1]));
+    const linha = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), linhaMat);
+    linha.renderOrder = 6; grupo.add(linha);
+  };
+
+  const permeavel = new THREE.Shape(contorno(t));
+  construida.concat(impermeavel.map(i => i.ret)).forEach(r => permeavel.holes.push(new THREE.Path(contorno(r))));
+  const telaPerm = hachura(permeavel, est.permeavel);
+  let telaCons = null, telaImp = null;
+  construida.forEach(r => { telaCons = hachura(new THREE.Shape(contorno(r)), est.construida); moldura(r); });
+  impermeavel.forEach(i => { telaImp = hachura(new THREE.Shape(contorno(i.ret)), est.impermeavel); moldura(i.ret); });
+  moldura(t);
+  scene.add(grupo);
+
+  // Legenda: áreas e porcentagens calculadas a partir dos retângulos.
+  const aT = area(t), aC = construida.reduce((s, r) => s + area(r), 0);
+  const aI = impermeavel.reduce((s, i) => s + area(i.ret), 0), aP = aT - aC - aI;
+  const pct = a => num(a / aT * 100) + '% do terreno';
+  const item = (tela, nome, texto) => {
+    const li = document.createElement('li'), am = document.createElement('span'), tx = document.createElement('span');
+    const forte = document.createElement('strong'), fraco = document.createElement('small');
+    am.className = 'amostra'; am.style.backgroundImage = 'url(' + tela.toDataURL() + ')';
+    forte.textContent = nome; fraco.textContent = texto;
+    tx.appendChild(forte); tx.appendChild(fraco); li.appendChild(am); li.appendChild(tx);
+    return li;
+  };
+  const titulo = document.createElement('h2'), sub = document.createElement('p'), lista = document.createElement('ul');
+  titulo.textContent = 'Implantação';
+  sub.textContent = 'Vista superior. Terreno de ' + num(Math.abs(t[2] - t[0])) + ' × ' + num(Math.abs(t[3] - t[1])) + ' m, ' + num(aT) + ' m².';
+  if (telaCons) lista.appendChild(item(telaCons, est.construida.nome, num(aC) + ' m², ' + pct(aC)));
+  lista.appendChild(item(telaPerm, est.permeavel.nome, num(aP) + ' m², ' + pct(aP)));
+  impermeavel.forEach(i => lista.appendChild(item(telaImp, i.nome, num(area(i.ret)) + ' m², impermeável')));
+  legendaEl.textContent = '';
+  legendaEl.appendChild(titulo); legendaEl.appendChild(sub); legendaEl.appendChild(lista);
+
+  implantacao = { grupo: grupo, mats: mats, op: 0 };
+}
+function opacidadeDasHachuras(op) {
+  implantacao.op = op;
+  implantacao.grupo.visible = op > 0.004;
+  implantacao.mats.forEach(m => { m.opacity = op; });
+}
+
+/* --- cômodos: botões presos ao modelo, que abrem a planta baixa --- */
+const comodos = [];
+function criarComodos() {
+  (CONFIG.comodos || []).forEach(c => {
+    const b = document.createElement('button'), nome = document.createElement('strong'), area = document.createElement('span');
+    b.type = 'button'; b.className = 'comodo';
+    nome.textContent = c.nome; b.appendChild(nome);
+    if (c.area != null) { area.textContent = num(c.area) + ' m²'; b.appendChild(area); }
+    b.setAttribute('aria-label', 'Abrir a planta baixa: ' + c.nome);
+    b.addEventListener('click', () => abrirDesenho(c));
+    comodosEl.appendChild(b);
+    comodos.push({ el: b, ponto: new THREE.Vector3(c.pos[0], (CONFIG.nivel || 0) + tamanho * 0.01, c.pos[1]) });
+  });
+}
+const projetado = new THREE.Vector3();
+function posicionarComodos() {
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  comodos.forEach(c => {
+    projetado.copy(c.ponto).project(cam);
+    const x = (projetado.x * 0.5 + 0.5) * W, y = (-projetado.y * 0.5 + 0.5) * H;
+    c.el.style.display = projetado.z < 1 ? '' : 'none';
+    c.el.style.transform = 'translate(-50%, -50%) translate(' + x.toFixed(1) + 'px, ' + y.toFixed(1) + 'px)';
+  });
+}
+
+/* --- conversa com a página do projeto (quando o viewer está dentro dela) --- */
+const origemDaPagina = location.protocol === 'file:' ? '*' : location.origin;
+function avisarPortfolio(mensagem) { window.parent.postMessage(mensagem, origemDaPagina); }
+window.addEventListener('message', e => {
+  if (!embutido || e.source !== window.parent) return;
+  if (origemDaPagina !== '*' && e.origin !== origemDaPagina) return;
+  const recado = e.data || {};
+  if (recado.tipo === 'viewer3d:ampliado') definirQuadro(!recado.valor);   // ampliado: controle total
+});
+window.viewer3d = { ampliar: valor => definirQuadro(!valor) };   // para páginas que usam o viewer sem iframe
+
+function abrirDesenho(comodo) {
+  const d = CONFIG.desenho || {};
+  if (embutido) {   // dentro do portfólio: quem abre é a ampliação da aba "Desenhos"
+    avisarPortfolio({ tipo: 'viewer3d:desenho', indice: d.indice || 0, comodo: comodo.nome });
+    return;
+  }
+  $('desenhoTitulo').textContent = (d.titulo || 'Planta baixa') + ': ' + comodo.nome;
+  $('desenhoQuadro').style.background = d.fundo || '#fff';
+  $('desenhoImg').src = d.src || '';
+  $('desenhoImg').alt = d.titulo || 'Planta baixa';
+  desenhoEl.classList.add('aberto');
+  desenhoEl.setAttribute('aria-hidden', 'false');
+  $('desenhoFechar').focus();
+}
+function fecharDesenho() {
+  desenhoEl.classList.remove('aberto');
+  desenhoEl.setAttribute('aria-hidden', 'true');
+}
+$('desenhoFechar').addEventListener('click', fecharDesenho);
+$('desenhoImg').addEventListener('error', () => { $('desenhoTitulo').textContent = 'Desenho não encontrado: ' + ((CONFIG.desenho || {}).src || ''); });
+window.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (desenhoEl.classList.contains('aberto')) fecharDesenho();
+  else if (embutido) avisarPortfolio({ tipo: 'viewer3d:esc' });
+});
+
+/* --- botões e textos de apoio --- */
+function montarBotoes() {
+  CONFIG.cenas.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'pilula'; b.textContent = c.nome;
+    b.addEventListener('click', () => {   // na cena atual, recentra a vista
+      encerrarConvite();
+      if (i === 0) retomarConvite();      // de volta à primeira cena, o convite recomeça
+      irParaCena(i);
+    });
+    barra.appendChild(b);
+  });
+}
+function atualizarInterface() {
+  const cena = CONFIG.cenas[cenaAtual];
+  [].forEach.call(barra.children, (b, i) => {
+    b.classList.toggle('ativa', i === cenaAtual);
+    b.setAttribute('aria-pressed', i === cenaAtual ? 'true' : 'false');
+  });
+  const mostraComodos = !!cena.comodos && comodos.length > 0;
+  comodosEl.classList.toggle('visivel', mostraComodos);
+  legendaEl.classList.toggle('visivel', travado);
+  legendaEl.setAttribute('aria-hidden', travado ? 'false' : 'true');
+  canvas.classList.toggle('travado', travado);
+  let dica = toque ? 'Um dedo gira. Dois dedos aproximam e deslocam.'
+                   : 'Arraste para girar. Shift + arraste desloca. A rolagem do mouse aproxima.';
+  if (travado) dica = toque ? 'Vista superior, sem rotação. Arraste para deslocar.'
+                            : 'Vista superior, sem rotação. Arraste para deslocar; a rolagem aproxima.';
+  else if (mostraComodos) dica = (toque ? 'Toque' : 'Clique') + ' em um ambiente para abrir a planta baixa.';
+  dicaEl.textContent = conviteAtivo ? conviteTexto : dica;
+}
+
+/* --- casa de teste (aparece quando o arquivo do modelo não é encontrado) ---
+   Estudo de 40 m² (5 × 8 m) em terreno de 10 × 10 m: sala e cozinha, dois quartos e um banheiro. */
+function criarDemo() {
+  const raiz = new THREE.Group();
+  raiz.name = 'Demo';
+  const grupo = nome => { const g = new THREE.Group(); g.name = nome; raiz.add(g); return g; };
+  const bloco = (pai, nome, cor, x1, z1, x2, z2, y1, y2) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(x2 - x1, y2 - y1, z2 - z1),
+                             new THREE.MeshLambertMaterial({ color: corLinear(cor) }));
+    m.name = nome; m.position.set((x1 + x2) / 2, (y1 + y2) / 2, (z1 + z2) / 2);
+    pai.add(m);
+  };
+  bloco(raiz, 'Terreno', '#e3d9c9', -5, -5, 5, 5, -0.15, 0);
+  bloco(raiz, 'Calcada', '#cdc4b6', -0.45, 3.5, 0.45, 5, 0, 0.03);
+
+  const pisos = grupo('Pisos');
+  bloco(pisos, 'Piso_Sala',       '#f1eaff', -2.5, -0.3, 2.5, 3.5, 0, 0.06);
+  bloco(pisos, 'Piso_Banheiro',   '#dcefe2', -2.5, -1.7, -0.714, -0.3, 0, 0.06);
+  bloco(pisos, 'Piso_Circulacao', '#f3e8d3', -0.714, -1.7, 2.5, -0.3, 0, 0.06);
+  bloco(pisos, 'Piso_Quarto_1',   '#e2d6f8', -2.5, -4.5, 0, -1.7, 0, 0.06);
+  bloco(pisos, 'Piso_Quarto_2',   '#e2d6f8', 0, -4.5, 2.5, -1.7, 0, 0.06);
+
+  const paredes = grupo('Paredes'), alt = 2.8;
+  const parede = (x1, z1, x2, z2) => bloco(paredes, '', '#fbf8f4', x1, z1, x2, z2, 0.06, alt);
+  const vidro = (x1, z1, x2, z2, y1, y2) => bloco(paredes, '', '#b7a6e4', x1, z1, x2, z2, y1, y2);
+  parede(-2.5, 3.35, -0.45, 3.5);  parede(0.45, 3.35, 2.5, 3.5);       // frente, com o vão da porta
+  parede(-2.5, -4.5, 2.5, -4.35);                                      // fundos
+  parede(-2.5, -4.35, -2.35, 3.35); parede(2.35, -4.35, 2.5, 3.35);    // laterais
+  parede(-2.35, -0.35, 0.6, -0.25); parede(1.5, -0.35, 2.35, -0.25);   // sala | circulação
+  parede(-2.35, -1.75, -0.66, -1.65); parede(-0.06, -1.75, 0.9, -1.65); parede(1.6, -1.75, 2.35, -1.65);   // circulação | quartos
+  parede(-0.764, -1.65, -0.664, -1.3); parede(-0.764, -0.7, -0.664, -0.35);   // banheiro | circulação
+  parede(-0.05, -4.35, 0.05, -1.75);                                   // quarto 1 | quarto 2
+  vidro(1.0, 3.34, 2.0, 3.51, 1.0, 2.1);
+  vidro(-1.85, -4.51, -0.65, -4.34, 1.0, 2.1); vidro(0.65, -4.51, 1.85, -4.34, 1.0, 2.1);
+  vidro(-2.51, -1.3, -2.34, -0.7, 1.6, 2.1);   vidro(2.34, 0.8, 2.51, 2.4, 1.0, 2.1);
+
+  // Telhado de uma água, com 30 cm de beiral: mais alto na frente.
+  const perfil = new THREE.Shape([new THREE.Vector2(-3.8, alt), new THREE.Vector2(4.8, alt),
+                                  new THREE.Vector2(4.8, alt + 0.14), new THREE.Vector2(-3.8, alt + 0.9)]);
+  const geo = new THREE.ExtrudeGeometry(perfil, { depth: 5.6, bevelEnabled: false });
+  geo.translate(0, 0, -2.8); geo.rotateY(Math.PI / 2);
+  const telhado = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: corLinear('#B96F54') }));
+  telhado.name = 'Telhado';
+  raiz.add(telhado);
+  return raiz;
+}
+function adicionarBordas(raiz) {
+  const mat = new THREE.LineBasicMaterial({ color: corLinear('#2a2030'), transparent: true, opacity: 0.75 });
+  const malhas = [];
+  raiz.traverse(o => { if (o.isMesh) malhas.push(o); });
+  malhas.forEach(m => {
+    // Afasta um pouco as faces para o contorno não "piscar" por cima delas.
+    [].concat(m.material).forEach(x => { x.polygonOffset = true; x.polygonOffsetFactor = 1; x.polygonOffsetUnits = 1; });
+    m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry, 30), mat));
+  });
+}
+
+/* --- modo ajuste (?ajuste=1 no fim do endereço): nomes das peças e coordenadas --- */
+let raizModelo = null, textoAjuste = '';
+function painelAjuste(caixa) {
+  const nomes = [], f = v => v.toFixed(2);
+  raizModelo.traverse(o => { if (o.name) nomes.push(o.name); });
+  textoAjuste = 'MODO AJUSTE\n' +
+    'Limites do modelo (m):  x ' + f(caixa.min.x) + ' a ' + f(caixa.max.x) + '  |  y ' + f(caixa.min.y) + ' a ' + f(caixa.max.y) +
+    '  |  z ' + f(caixa.min.z) + ' a ' + f(caixa.max.z) + '\n' +
+    (faltando.length ? 'CITADAS NAS CENAS E NÃO ENCONTRADAS: ' + faltando.join(', ') + '\n' : '') +
+    'Peças com nome (' + nomes.length + '): ' + nomes.slice(0, 200).join(', ') + (nomes.length > 200 ? ' …' : '') + '\n' +
+    'Clique em um ponto do modelo para ler as coordenadas.';
+  $('ajuste').hidden = false;
+  $('ajuste').textContent = textoAjuste;
+}
+function lerPonto(e) {
+  const r = canvas.getBoundingClientRect(), raio = new THREE.Raycaster();
+  raio.setFromCamera(new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1), cam);
+  const visivel = o => { for (; o; o = o.parent) if (!o.visible) return false; return true; };
+  const toca = raio.intersectObject(raizModelo, true).filter(t => t.object.isMesh && visivel(t.object))[0];
+  if (!toca) return;
+  const cadeia = [];
+  for (let o = toca.object; o && o !== raizModelo.parent; o = o.parent) if (o.name) cadeia.push(o.name);
+  $('ajuste').textContent = textoAjuste + '\n\nPONTO:  x = ' + toca.point.x.toFixed(2) + '   z = ' + toca.point.z.toFixed(2) +
+    '   (y = ' + toca.point.y.toFixed(2) + ')\nPeça: ' + (cadeia.join(' < ') || 'sem nome');
+}
+
+/* --- convite: frase curta + pulso colorido no próximo botão. Para no clique e recomeça
+       sempre que o visitante volta à primeira cena. --- */
+const CORES_PULSO = ['109, 40, 217', '185, 28, 28', '214, 164, 78', '20, 83, 45'];   // roxo, vermelho, ocre e verde do portfólio
+let conviteAtivo = false, conviteTexto = '', pulsoN = 0, pulsoTimer = null;
+function prepararConvite() {
+  conviteTexto = String(CONFIG.convite || '').trim();
+  if (!toque) conviteTexto = conviteTexto.replace(/^Toque\b/, 'Clique');
+  conviteAtivo = !!conviteTexto && barra.children.length > 1;
+  raizEl.classList.toggle('com-convite', conviteAtivo);
+}
+function pulsar() {
+  if (!conviteAtivo || pulsoN >= CORES_PULSO.length * 3) return;          // três voltas pelas cores e para
+  const botao = barra.children[(cenaAtual + 1) % barra.children.length];  // o botão da próxima cena
+  botao.style.setProperty('--pulso', CORES_PULSO[pulsoN % CORES_PULSO.length]);
+  botao.classList.remove('pulsa'); void botao.offsetWidth; botao.classList.add('pulsa');
+  pulsoN++;
+  pulsoTimer = setTimeout(pulsar, pulsoN % CORES_PULSO.length ? 1500 : 4500);   // pausa maior entre uma volta e outra
+}
+function iniciarConvite() {   // começa a pulsar quando o quadro aparece na tela
+  if (!conviteAtivo) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;   // fica só a frase
+  if (!window.IntersectionObserver) { pulsoTimer = setTimeout(pulsar, 900); return; }
+  const olho = new IntersectionObserver(itens => {
+    if (!itens.some(i => i.isIntersecting)) return;
+    olho.disconnect();
+    pulsoTimer = setTimeout(pulsar, 900);
+  }, { threshold: 0.5 });
+  olho.observe(raizEl);
+}
+function encerrarConvite() {
+  if (!conviteAtivo) return;
+  conviteAtivo = false;
+  clearTimeout(pulsoTimer);
+  raizEl.classList.remove('com-convite');
+  [].forEach.call(barra.children, b => b.classList.remove('pulsa'));
+}
+function retomarConvite() {   // o visitante voltou à primeira cena: a frase e o pulso recomeçam
+  if (!conviteTexto || barra.children.length < 2) return;
+  conviteAtivo = true;
+  pulsoN = 0;
+  raizEl.classList.add('com-convite');
+  clearTimeout(pulsoTimer);
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;   // fica só a frase
+  pulsoTimer = setTimeout(pulsar, 900);
+}
+
+/* --- área do projeto, no canto de baixo à esquerda --- */
+function montarArea() {
+  const texto = String(CONFIG.area || '').trim();
+  areaEl.hidden = !texto;
+  if (!texto) return;
+  const rotulo = document.createElement('span'), valor = document.createElement('strong');
+  rotulo.textContent = 'Área'; valor.textContent = texto;
+  areaEl.textContent = ''; areaEl.appendChild(rotulo); areaEl.appendChild(valor);
+  areaEl.setAttribute('aria-label', 'Área do projeto: ' + texto);
+}
+function acomodarArea() {   // botões das cenas encostando na área: vão para a direita; sem espaço nem assim, a área some
+  if (areaEl.hidden || !barra.children.length) return;
+  raizEl.classList.remove('barra-direita', 'sem-area');
+  const folga = () => barra.getBoundingClientRect().left - areaEl.getBoundingClientRect().right;
+  if (folga() >= 10) return;
+  raizEl.classList.add('barra-direita');
+  if (folga() < 6) { raizEl.classList.remove('barra-direita'); raizEl.classList.add('sem-area'); }
+}
+
+/* --- início --- */
+function iniciar(raiz, demo, motivo) {
+  raizModelo = raiz;
+  scene.add(raiz);
+  raiz.updateMatrixWorld(true);
+  const caixa = new THREE.Box3().setFromObject(raiz), tam = caixa.getSize(new THREE.Vector3());
+  tamanho = Math.max(tam.x, tam.y, tam.z) || 10;
+  metade.copy(tam).multiplyScalar(0.5);
+  caixa.getCenter(centro);
+  cam.near = tamanho / 200; cam.far = tamanho * 100; cam.updateProjectionMatrix();
+  // Sem mapa de ambiente, material metálico fica preto. Alguns exportadores marcam tudo como metal.
+  if (!demo) raiz.traverse(o => [].concat(o.material || []).forEach(m => { if (m.metalness) m.metalness = 0; }));
+  if (demo || CONFIG.bordas) adicionarBordas(raiz);
+  prepararNos(raiz);
+  criarImplantacao();
+  criarComodos();
+  montarBotoes();
+  montarArea();
+  acomodarArea();
+  prepararConvite();
+  if (demo) {
+    avisoEl.textContent = 'Modelo de teste';
+    avisoEl.title = 'O arquivo ' + CONFIG.modelo + ' ' + motivo + '. Enquanto isso, aparece a casa de teste.';
+    console.info('Modelo de teste em uso: ' + CONFIG.modelo + ' ' + motivo + '.');
+  }
+  pronto = true;
+  irParaCena(0, 0);
+  iniciarConvite();
+  if (modoAjuste) painelAjuste(caixa);
+  if (embutido) avisarPortfolio({ tipo: 'viewer3d:pronto' });   // a página responde se está ampliado ou não
+}
+function carregar() {
+  if (!CONFIG.modelo || typeof THREE.GLTFLoader !== 'function') { iniciar(criarDemo(), true, 'não foi indicado'); return; }
+  new THREE.GLTFLoader().load(CONFIG.modelo, g => iniciar(g.scene, false), undefined, () => {
+    // Descobre se o arquivo falta ou se existe e não pôde ser lido (ex.: exportado com compressão Draco).
+    fetch(CONFIG.modelo, { method: 'HEAD' }).then(r => r.ok, () => false).then(existe => {
+      iniciar(criarDemo(), true, existe ? 'foi encontrado, mas não pôde ser lido (exporte sem compressão Draco)' : 'não foi encontrado');
+    });
+  });
+}
+
+/* --- laço de desenho: só redesenha quando algo muda --- */
+let larguraAtual = 0, alturaAtual = 0;
+function ajustarTamanho() {
+  const w = canvas.clientWidth || raizEl.clientWidth || window.innerWidth;
+  const h = canvas.clientHeight || raizEl.clientHeight || window.innerHeight;
+  if (w === larguraAtual && h === alturaAtual) return;
+  larguraAtual = w; alturaAtual = h;
+  raizEl.classList.toggle('estreito', w <= 560);
+  raizEl.classList.toggle('fino', w <= 330);
+  raizEl.classList.toggle('compacto', h <= 520 || w <= 380);
+  raizEl.classList.toggle('mini', h <= 420);
+  acomodarArea();
+  renderer.setSize(w, h, false);
+  cam.aspect = w / h;
+  cam.updateProjectionMatrix();
+  sujo = true;
+  if (!pronto) return;
+  if (!camLivre) irParaCena(cenaAtual, 0);                                 // reenquadra para o novo tamanho
+  else if (travado) comporImplantacao(CONFIG.cenas[cenaAtual]);            // só reposiciona a legenda
+}
+if (window.ResizeObserver) new ResizeObserver(ajustarTamanho).observe(raizEl);
+window.addEventListener('resize', ajustarTamanho);
+function laco(ts) {
+  if (anim) { passo(ts); sujo = true; }
+  if (sujo) {
+    sujo = false;
+    atualizarCamera();
+    renderer.render(scene, cam);
+    if (comodos.length) posicionarComodos();
+  }
+  requestAnimationFrame(laco);
+}
+if (modoAjuste) window.viewer3d.estado = () => ({ giro: giro, altura: altura, dist: dist, alvo: alvo.toArray(), cena: cenaAtual,
+  travado: travado, noQuadro: noQuadro, hachuras: implantacao ? implantacao.op : null,
+  nos: Object.keys(nos).reduce((r, n) => { r[n] = { p: nos[n].obj.position.toArray(), s: nos[n].obj.scale.toArray(), o: nos[n].op }; return r; }, {}) });
+
+ajustarTamanho();
+carregar();
+requestAnimationFrame(laco);
+})();
+</script>
+</body>
+</html>

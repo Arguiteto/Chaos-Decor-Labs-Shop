@@ -1,0 +1,5194 @@
+<!doctype html>
+<!--
+  PORTFÓLIO CARLOS A. BOICO — SISTEMA ORGANIZADO
+
+  COMO LER ESTE ARQUIVO:
+  1. CSS / VISUAL: fica dentro da tag STYLE, separado por blocos com títulos.
+  2. HTML / ESTRUTURA: fica dentro da tag BODY, separado por comentários.
+  3. CONTEÚDO EDITÁVEL: fica no começo da tag SCRIPT, principalmente em:
+     - const projects     -> projetos, capas, fotos, infos e desenhos
+     - const systemPages  -> textos das páginas Sobre mim / Projetos / Contato
+
+  COMO TROCAR IMAGENS:
+  - Coloque a imagem dentro da pasta assets/
+  - No projeto, use o caminho assim: src: 'assets/nome-da-imagem.jpg'
+
+  EVITE ALTERAR:
+  - nomes de classes CSS
+  - ids do HTML
+  - nomes das funções JavaScript
+  A não ser que você queira mudar o funcionamento do sistema.
+-->
+
+<!-- BUILD: andamento-v10 -->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- TÍTULO E DESCRIÇÃO: é o que aparece no resultado do Google e na aba do navegador.
+       Se mudar aqui, repita em "const identidade" (no começo do script) e nas linhas og: abaixo. -->
+  <title>Carlos A. Boico — Portfólio de Arquitetura e Urbanismo</title>
+  <meta name="description" content="Portfólio de Carlos A. Boico, estudante de Arquitetura e Urbanismo e ilustrador em Campo Grande/MS. Projetos de interiores, reforma, paisagismo e mobiliário." />
+  <meta name="author" content="Carlos A. Boico" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <!-- PRÉ-VISUALIZAÇÃO DO LINK (WhatsApp, Instagram, LinkedIn...): título, frase e imagem.
+       A imagem precisa do endereço completo do site. QUANDO O ENDEREÇO DO SITE MUDAR
+       (domínio próprio ou outro nome no GitHub), troque o começo da linha "og:image".
+       É a única linha deste arquivo que depende do endereço. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:site_name" content="Carlos A. Boico" />
+  <meta property="og:title" content="Carlos A. Boico — Portfólio de Arquitetura e Urbanismo" />
+  <meta property="og:description" content="Estudante de Arquitetura e Urbanismo e ilustrador em Campo Grande/MS. Projetos de interiores, reforma, paisagismo e mobiliário." />
+  <meta property="og:image" content="https://arguiteto.github.io/PORTCarlosABoico/assets/compartilhar.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Render do Salão Vitalina de Beleza, projeto de interiores do portfólio de Carlos A. Boico" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Marca que o JavaScript está ligado. Com ele ligado, a "versão em texto" do portfólio
+       (bloco no começo do BODY) fica escondida e o site funciona como sempre. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <meta name="theme-color" content="#f4efe8" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/favicon-180.png" />
+
+  <style>
+    /*
+      ─────────────────────────────────────────────
+      CSS / VISUAL DO SITE
+      ─────────────────────────────────────────────
+      ORDEM DOS BLOCOS:
+      01. Variáveis de cor, medidas e base
+      02. Barra superior
+      03. Hall / carrossel principal
+      04. Páginas internas do menu
+      05. Página interna de projeto
+      06. Painéis Infos / Desenhos
+      07. Lightbox / imagem ampliada
+      08. Responsivo
+      09. Ajustes finais
+    */
+
+    /* ── 01. VARIÁVEIS GERAIS ───────────────────────────── */
+    :root {
+      --bg: #f4efe8;
+      --paper: #f4efe8;
+      --text: #171217;
+      --muted: #6e6372;
+      --purple: #6d28d9;
+      --purple-dark: #2e1065;
+      --purple-pale: #f1eaff;
+      --line: rgba(46, 16, 101, .16);
+      --shadow: 0 18px 55px rgba(46, 16, 101, .10);
+      --radius: 26px;
+      --content-width: 1360px;
+      --edge: clamp(18px, 3.2vw, 44px);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+      background: #6f5d4b;
+      overflow-x: hidden;
+    }
+
+    body.modal-open,
+    body.panel-open,
+    body.menu-open {
+      overflow: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    button, input, textarea { font: inherit; }
+
+    button { -webkit-tap-highlight-color: transparent; }
+
+    /* ── 02. BARRA SUPERIOR / TOPO ──────────────────────── */
+
+    /* ── FAIXA HARLEQUIM ──────────────────────────────── */
+    @keyframes harlequinScroll {
+      0%   { background-position: 0 0, 22px 22px; }
+      100% { background-position: -44px 0, -22px 22px; }
+    }
+
+    .harlequin-stripe {
+      height: 44px;
+      width: 100%;
+      animation: harlequinScroll 2.8s linear infinite;
+      /* Paleta padrão: vermelho circo (home) */
+      --hq-d: #B91C1C;
+      --hq-b: #F5EDD8;
+      background-image:
+        linear-gradient(45deg, var(--hq-d) 25%, transparent 25%, transparent 75%, var(--hq-d) 75%),
+        linear-gradient(45deg, var(--hq-d) 25%, transparent 25%, transparent 75%, var(--hq-d) 75%);
+      background-size: 44px 44px;
+      background-color: var(--hq-b);
+      flex-shrink: 0;
+    }
+
+    /* Projetos → roxo arlequim */
+    body.page-projetos .harlequin-stripe {
+      --hq-d: #4C1D95;
+      --hq-b: #EDE9FE;
+    }
+
+    /* Sobre → floresta verde */
+    body.page-sobre .harlequin-stripe {
+      --hq-d: #14532D;
+      --hq-b: #DCFCE7;
+    }
+
+    /* Contato → Kill Bill preto/amarelo */
+    body.page-contato .harlequin-stripe {
+      --hq-d: #1C1917;
+      --hq-b: #FDE047;
+    }
+
+    .site-header {
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 0;
+      background: rgba(247, 242, 236, .86);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(46, 16, 101, .06);
+    }
+
+    /* Wrapper para empilhar faixa + nav dentro do header sticky */
+    .site-header-inner {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--edge);
+      height: 70px;
+    }
+
+    .logo {
+      width: clamp(76px, 7vw, 112px);
+      height: 52px;
+      border: 0;
+      border-radius: 0;
+      display: grid;
+      place-items: center;
+      line-height: 1;
+      background: transparent;
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+
+    .logo img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .menu-button { display: none; }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: clamp(12px, 2.4vw, 34px);
+      margin-left: auto;
+    }
+
+    .top-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(12px, 1vw, 14px);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 10px 0;
+      cursor: pointer;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .top-icon:hover,
+    .top-icon:focus-visible {
+      opacity: .62;
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .icon-mark {
+      width: 21px;
+      height: 21px;
+      display: inline-grid;
+      place-items: center;
+      color: var(--text);
+      flex: 0 0 auto;
+    }
+
+    .icon-mark svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.35;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .menu-panel {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      background: var(--purple-dark);
+      color: var(--paper);
+      transform: translateY(-101%);
+      transition: transform .55s cubic-bezier(.76, 0, .24, 1);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .menu-panel.is-open { transform: translateY(0); }
+
+    .menu-panel__top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .menu-panel .logo { color: var(--paper); }
+
+    .menu-panel .logo img {
+      filter: invert(1);
+    }
+
+    .close-menu {
+      background: transparent;
+      color: var(--paper);
+      border: 0;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .menu-links {
+      display: grid;
+      gap: 10px;
+      margin: 10vh 0;
+    }
+
+    .menu-links a {
+      font-size: clamp(42px, 8vw, 112px);
+      line-height: .94;
+      letter-spacing: -0.06em;
+      border-bottom: 1px solid rgba(255, 255, 255, .18);
+      padding-bottom: 12px;
+    }
+
+    .menu-note {
+      display: none;
+    }
+
+    .home-view.is-hidden { display: none; }
+
+    .content-scale {
+      width: min(100%, var(--content-width));
+      margin-inline: auto;
+      padding-inline: var(--edge);
+    }
+
+    /* ── 03. HALL / CARROSSEL PRINCIPAL ─────────────────── */
+    .project-strip {
+      padding: clamp(26px, 3.2vw, 46px) 0 32px;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(244, 236, 222, .20);
+    }
+
+    .carousel-shell {
+      position: relative;
+      width: min(100%, var(--content-width));
+      margin-inline: auto;
+      padding-inline: var(--edge);
+    }
+
+    .project-track {
+      display: flex;
+      gap: clamp(18px, 2.2vw, 30px);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      padding: 0 0 12px;
+      cursor: grab;
+      user-select: none;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+    }
+
+    .project-track::-webkit-scrollbar { display: none; }
+
+    .project-track.is-dragging {
+      cursor: grabbing;
+      scroll-snap-type: none;
+    }
+
+    .project-track.is-auto-scrolling {
+      scroll-snap-type: none;
+    }
+
+    .project-card {
+      flex: 0 0 clamp(220px, 20vw, 300px);
+      scroll-snap-align: start;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .project-card:focus-visible,
+    .project-card:hover .project-title {
+      color: #fff5e6;
+      outline: none;
+    }
+
+    .project-image {
+      height: clamp(300px, 36vw, 490px);
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(46, 16, 101, .18), rgba(255,255,255,.36));
+      filter: grayscale(.78) contrast(.94) brightness(1.03);
+      transition: filter .35s ease, transform .35s ease;
+      isolation: isolate;
+    }
+
+    .project-image::before,
+    .project-image::after,
+    .media-block::before,
+    .drawing-card::before,
+    .lightbox-media::before,
+    .drawing-full-image::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    .project-image::before,
+    .media-block::before,
+    .drawing-card::before,
+    .lightbox-media::before,
+    .drawing-full-image::before {
+      background: var(--art, linear-gradient(135deg, rgba(46, 16, 101, .18), rgba(255,255,255,.36)));
+      background-size: cover;
+      background-position: center;
+      z-index: -2;
+    }
+
+    .project-image::after,
+    .media-block::after,
+    .drawing-card::after,
+    .lightbox-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(46,16,101,.02), rgba(46,16,101,.16));
+      mix-blend-mode: multiply;
+      z-index: -1;
+    }
+
+    .art-1 { --art: linear-gradient(90deg, rgba(23,18,23,.14) 0 18%, transparent 18% 24%, rgba(23,18,23,.1) 24% 42%, transparent 42%), linear-gradient(135deg, #d7d1c9, #f6f2ec 52%, #b7abbc); }
+    .art-2 { --art: linear-gradient(90deg, transparent 0 16%, rgba(255,255,255,.48) 16% 26%, transparent 26% 46%, rgba(46,16,101,.15) 46% 58%, transparent 58%), linear-gradient(180deg, #d7d3cd, #f7f2ec 42%, #c2bbc7); }
+    .art-3 { --art: radial-gradient(circle at 18% 20%, rgba(255,255,255,.92) 0 9%, transparent 10%), linear-gradient(90deg, rgba(46,16,101,.14) 0 2px, transparent 2px 80px), linear-gradient(160deg, #dbe0db, #f5f1ea 48%, #b8afbc); }
+    .art-4 { --art: radial-gradient(circle at 82% 18%, rgba(46,16,101,.22) 0 12%, transparent 13%), linear-gradient(110deg, transparent 0 43%, rgba(255,255,255,.76) 43% 70%, transparent 70%), linear-gradient(180deg, #d0d0c9, #f3eee8 60%, #b4a9bc); }
+    .art-5 { --art: linear-gradient(90deg, rgba(23,18,23,.11) 0 18%, transparent 18% 29%, rgba(46,16,101,.14) 29% 52%, transparent 52%), repeating-linear-gradient(0deg, #dad5cf 0 22px, #f7f2ec 22px 44px); }
+    .art-6 { --art: linear-gradient(140deg, rgba(255,255,255,.72) 0 28%, transparent 28% 44%, rgba(46,16,101,.16) 44% 72%, transparent 72%), linear-gradient(180deg, #cac6c0, #f7f2ec 50%, #b5acbd); }
+    .art-7 { --art: radial-gradient(circle at 20% 78%, rgba(46,16,101,.18) 0 16%, transparent 17%), linear-gradient(90deg, rgba(255,255,255,.78) 0 12%, transparent 12% 70%), linear-gradient(145deg, #d8d1ca, #f4efe8, #b5acbb); }
+    .art-8 { --art: linear-gradient(120deg, transparent 0 28%, rgba(23,18,23,.10) 28% 38%, transparent 38% 70%), repeating-linear-gradient(90deg, #efe9e2 0 34px, #cfc7c0 34px 36px); }
+    .art-9 { --art: radial-gradient(circle at 76% 34%, rgba(255,255,255,.85) 0 11%, transparent 12%), linear-gradient(165deg, #cbc7c0 0 34%, #f7f2ec 34% 64%, #b8adbd 64% 100%); }
+    .art-10 { --art: linear-gradient(180deg, rgba(46,16,101,.10) 0 15%, transparent 15% 42%, rgba(23,18,23,.10) 42% 57%, transparent 57%), linear-gradient(135deg, #e1ddd5, #f6f0ea 56%, #b7afbd); }
+    .art-11 { --art: radial-gradient(circle at 50% 50%, rgba(46,16,101,.16) 0 2px, transparent 3px 30px), linear-gradient(135deg, #d2ccc4, #f7f2ec 48%, #bbb2c1); }
+    .art-12 { --art: linear-gradient(90deg, rgba(255,255,255,.75) 0 10%, transparent 10% 30%, rgba(46,16,101,.13) 30% 44%, transparent 44%), linear-gradient(180deg, #d7d2ca, #f7f2ec 48%, #c1b7c7); }
+
+    .project-title {
+      margin: 12px 0 0;
+      font-size: 16px;
+      line-height: 1.25;
+      color: #eadcc8;
+      transition: color .2s ease;
+    }
+
+    .project-meta {
+      margin: 5px 0 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: rgba(234, 220, 200, .72);
+    }
+
+    .carousel-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 5px 0 0;
+    }
+
+    .round-control,
+    .carousel-controls button,
+    .project-action,
+    .lightbox-arrow {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.16);
+      color: var(--purple-dark);
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
+    }
+
+    .carousel-controls button,
+    .round-control {
+      width: 42px;
+      height: 42px;
+    }
+
+    .round-control:hover,
+    .carousel-controls button:hover,
+    .project-action:hover,
+    .lightbox-arrow:hover {
+      background: var(--purple-pale);
+      transform: translateY(-2px);
+    }
+
+    .hero {
+      min-height: 70vh;
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: clamp(32px, 8vw, 120px);
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .home-section,
+    .hero {
+      padding-block: clamp(48px, 8vw, 110px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: Arial, Helvetica, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      font-size: 11px;
+      color: var(--purple);
+      margin: 0 0 18px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 26px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(52px, 10vw, 142px);
+      line-height: .86;
+      letter-spacing: -0.08em;
+      font-weight: 400;
+      max-width: 980px;
+    }
+
+    .hero-text {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--muted);
+      font-size: clamp(15px, 1.4vw, 19px);
+      line-height: 1.75;
+      max-width: 520px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      border: 1px solid var(--purple-dark);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      transition: transform .2s ease, background .2s ease, color .2s ease;
+    }
+
+    .button.primary {
+      background: var(--purple-dark);
+      color: var(--paper);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      background: var(--purple);
+      border-color: var(--purple);
+      color: var(--paper);
+    }
+
+    .home-section {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 34px;
+    }
+
+    .section-label {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--purple);
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 8px 0 0;
+      font-size: clamp(36px, 5.5vw, 82px);
+      line-height: .92;
+      letter-spacing: -0.06em;
+      font-weight: 400;
+    }
+
+    .small-copy {
+      margin: 0;
+      max-width: 420px;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .info-card {
+      min-height: 230px;
+      padding: 24px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .22);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .info-card span {
+      color: var(--purple);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .info-card h3 {
+      margin: 18px 0 0;
+      font-size: 25px;
+      font-weight: 400;
+      letter-spacing: -0.04em;
+    }
+
+    .info-card p {
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .about {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: clamp(32px, 8vw, 100px);
+      align-items: start;
+    }
+
+    .about-mark {
+      min-height: 420px;
+      border-radius: var(--radius);
+      background: radial-gradient(circle at 30% 24%, rgba(167, 139, 250, .42), transparent 24%), linear-gradient(135deg, var(--purple-dark), var(--purple), #a78bfa);
+      color: var(--paper);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+    }
+
+    .about-mark strong {
+      font-size: clamp(48px, 8vw, 100px);
+      line-height: .86;
+      letter-spacing: -0.08em;
+      font-weight: 400;
+    }
+
+    .about-copy p {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(16px, 1.6vw, 21px);
+      line-height: 1.75;
+    }
+
+    .contact {
+      min-height: 60vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background: var(--purple-dark);
+      color: var(--paper);
+    }
+
+    .contact h2 { max-width: 900px; }
+
+    .contact p {
+      margin: 22px auto 0;
+      max-width: 560px;
+      color: rgba(255, 255, 255, .72);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.75;
+    }
+
+    .contact .button {
+      margin-top: 28px;
+      border-color: rgba(255, 255, 255, .55);
+      color: var(--paper);
+    }
+
+    .contact .button:hover {
+      background: var(--paper);
+      color: var(--purple-dark);
+      border-color: var(--paper);
+    }
+
+    /* ── 05. PÁGINA INTERNA DOS PROJETOS ────────────────── */
+    .project-view {
+      min-height: 100vh;
+      display: none;
+    }
+
+    .project-view.is-active { display: block; }
+
+    .project-header {
+      min-height: 74px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 18px;
+      padding: 10px var(--edge);
+      position: sticky;
+      top: 0;
+      z-index: 45;
+      background: rgba(247, 242, 236, .9);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(46, 16, 101, .08);
+    }
+
+    .project-header-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .project-name {
+      margin: 0;
+      font-size: clamp(18px, 2.3vw, 34px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .project-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+    }
+
+    .project-action {
+      min-height: 40px;
+      padding: 0 16px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      background: rgba(255,255,255,.20);
+    }
+
+    .project-action.is-active {
+      background: var(--purple-dark);
+      color: var(--paper);
+      border-color: var(--purple-dark);
+    }
+
+    .project-stage {
+      width: min(100%, var(--content-width));
+      margin-inline: auto;
+      padding: clamp(22px, 3.4vw, 44px) var(--edge) clamp(56px, 8vw, 110px);
+    }
+
+    .project-intro {
+      display: grid;
+      grid-template-columns: 1fr .55fr;
+      gap: clamp(24px, 5vw, 80px);
+      align-items: end;
+      padding: 0 0 clamp(24px, 4vw, 44px);
+    }
+
+    .project-intro h1 {
+      font-size: clamp(48px, 8vw, 116px);
+      max-width: 980px;
+    }
+
+    .project-intro-text {
+      margin: 0;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .project-media-area {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+      gap: clamp(18px, 2.6vw, 34px);
+      align-items: start;
+    }
+
+    .vertical-carousel {
+      position: sticky;
+      top: 96px;
+      height: min(74vh, 720px);
+      min-height: 510px;
+      overflow: hidden;
+      background: rgba(255,255,255,.28);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .vertical-carousel-track {
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      transition: transform .9s cubic-bezier(.76, 0, .24, 1);
+    }
+
+    .media-block {
+      min-height: min(74vh, 720px);
+      height: min(74vh, 720px);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      border: 0;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .media-block-label {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      z-index: 2;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+      pointer-events: none;
+    }
+
+    .media-block-label strong,
+    .media-block-label span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 18px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: rgba(251, 248, 244, .74);
+      border: 1px solid rgba(23, 18, 23, .08);
+      backdrop-filter: blur(4px);
+      color: rgba(23, 18, 23, .76);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9px;
+      line-height: 1;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      text-shadow: none;
+      font-weight: 400;
+    }
+
+    .media-block-label strong {
+      letter-spacing: .04em;
+      font-weight: 400;
+    }
+
+    .project-side {
+      display: grid;
+      gap: 16px;
+    }
+
+    .side-card {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.24);
+      padding: 22px;
+      min-height: 210px;
+    }
+
+    .side-card h3 {
+      margin: 0;
+      font-size: 27px;
+      letter-spacing: -0.04em;
+      font-weight: 400;
+    }
+
+    .side-card p {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .progress-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .progress-dots button {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      border: 1px solid var(--purple-dark);
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      opacity: .45;
+    }
+
+    .progress-dots button.is-active {
+      background: var(--purple-dark);
+      opacity: 1;
+    }
+
+    .panel-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(23, 18, 23, .28);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .26s ease;
+    }
+
+    .panel-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ── 06. PAINÉIS LATERAIS: INFOS E DESENHOS ─────────── */
+    .info-panel,
+    .drawings-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 60;
+      width: min(460px, 92vw);
+      height: 100vh;
+      background: var(--paper);
+      box-shadow: -26px 0 70px rgba(23,18,23,.18);
+      transform: translateX(104%);
+      transition: transform .44s cubic-bezier(.76, 0, .24, 1);
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid var(--line);
+    }
+
+    .drawings-panel {
+      width: min(720px, 94vw);
+    }
+
+    .info-panel.is-open,
+    .drawings-panel.is-open {
+      transform: translateX(0);
+    }
+
+    .panel-head {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h2 {
+      font-size: clamp(28px, 4vw, 48px);
+      margin: 0;
+    }
+
+    .panel-close {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--purple-dark);
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+
+    .panel-body {
+      padding: 22px 20px 32px;
+      overflow-y: auto;
+    }
+
+    .terrain-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .terrain-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+    }
+
+    .terrain-item span:first-child {
+      color: var(--muted);
+    }
+
+    .terrain-item span:last-child {
+      text-align: right;
+      color: var(--text);
+    }
+
+    .drawings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .drawing-card {
+      min-height: 250px;
+      border: 1px solid var(--line);
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .drawing-card::after {
+      background: linear-gradient(180deg, transparent 54%, rgba(23,18,23,.38));
+    }
+
+    /* ── Desenhos tecnicos: aparecem inteiros, sem corte ── */
+    .drawing-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .drawing-full-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+    }
+
+    /* Fundo da prancha preenche a sobra do enquadramento. */
+    .drawing-card.has-real-image,
+    .drawing-card.has-real-image .drawing-img,
+    .drawing-full-image.has-real-image,
+    .drawing-full-image.has-real-image .drawing-full-img {
+      background: var(--fundo, #fff) !important;
+    }
+
+    /* Desenho com arquivo: sem os degrades decorativos por tras/por cima. */
+    .drawing-card.has-real-image::before,
+    .drawing-card.has-real-image::after,
+    .drawing-full-image.has-real-image::before,
+    .drawing-full-image.has-real-image::after {
+      display: none;
+    }
+
+    /* Prancha no carrossel do projeto: inteira, sem corte. */
+    .project-view .media-block.is-fit-contain .media-img,
+    .project-view .media-block.is-fit-contain img {
+      object-fit: contain !important;
+    }
+
+    .project-view .media-block.is-fit-contain::before,
+    .project-view .media-block.is-fit-contain::after {
+      display: none;
+    }
+
+    .drawing-title {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 2;
+      color: var(--paper);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+      text-align: left;
+    }
+
+    .drawing-card.is-foto .drawing-img {
+      object-fit: cover;
+    }
+
+    .drawing-card.has-real-image .drawing-title {
+      color: #171217;
+      background: rgba(255, 255, 255, .82);
+      padding: 5px 8px;
+      width: fit-content;
+      max-width: calc(100% - 24px);
+    }
+
+    /* ── 07. VISUALIZAÇÃO AMPLA / LIGHTBOX ──────────────── */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      background: rgba(23, 18, 23, .86);
+      color: var(--paper);
+    }
+
+    .lightbox.is-open { display: grid; }
+
+    .lightbox-inner {
+      position: relative;
+      width: min(100%, 1480px);
+      height: 100vh;
+      margin-inline: auto;
+      padding: 74px var(--edge) 34px;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 14px;
+    }
+
+    .lightbox-top {
+      position: absolute;
+      top: 18px;
+      left: var(--edge);
+      right: var(--edge);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      z-index: 4;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,.78);
+    }
+
+    .lightbox-close {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.35);
+      color: var(--paper);
+      background: rgba(255,255,255,.08);
+      cursor: pointer;
+    }
+
+    .lightbox-stage {
+      position: relative;
+      min-height: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    .lightbox-media {
+      width: min(100%, 1180px);
+      height: min(72vh, 720px);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      background: rgba(255,255,255,.08);
+    }
+
+    .lightbox-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 52px;
+      height: 52px;
+      border-color: rgba(255,255,255,.35);
+      color: var(--paper);
+      background: rgba(255,255,255,.08);
+      z-index: 3;
+      font-size: 22px;
+    }
+
+    .lightbox-arrow:hover {
+      transform: translateY(-50%);
+      background: rgba(255,255,255,.18);
+    }
+
+    .lightbox-arrow.prev { left: 0; }
+    .lightbox-arrow.next { right: 0; }
+
+    .lightbox-caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      font-family: Arial, Helvetica, sans-serif;
+      color: rgba(255,255,255,.74);
+      font-size: 13px;
+    }
+
+    .drawing-full {
+      position: fixed;
+      inset: 0;
+      z-index: 95;
+      display: none;
+      background: rgba(247, 242, 236, .96);
+      color: var(--text);
+    }
+
+    .drawing-full.is-open { display: grid; }
+
+    .drawing-full-inner {
+      position: relative;
+      width: min(100%, 1500px);
+      height: 100vh;
+      margin: 0 auto;
+      padding: 76px var(--edge) 34px;
+      display: grid;
+      place-items: center;
+    }
+
+    .drawing-full-close {
+      position: absolute;
+      top: 18px;
+      right: var(--edge);
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--purple-dark);
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .drawing-full-title {
+      position: absolute;
+      top: 30px;
+      left: var(--edge);
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .drawing-full-image {
+      width: min(100%, 1220px);
+      height: min(78vh, 820px);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+
+
+    /* ── 07A. VERSÃO EM TEXTO DO PORTFÓLIO ────────────────
+       Bloco com os textos do site escritos direto no HTML (para o Google, para as
+       pré-visualizações de link e para quem abre o site sem JavaScript).
+       Com o site funcionando normalmente ele fica escondido, e nada muda na tela.
+       Sem JavaScript, ele aparece no lugar do carrossel. */
+    html.js .versao-texto { display: none; }
+    html:not(.js) .home-view { display: none; }
+    .versao-texto {
+      width: min(100%, 820px);
+      margin-inline: auto;
+      padding: clamp(28px, 5vw, 56px) var(--edge) 40px;
+      line-height: 1.6;
+    }
+    .versao-texto h1 { margin: 0 0 8px; max-width: none; font-size: clamp(28px, 4vw, 42px); line-height: 1.1; letter-spacing: -.03em; }
+    .versao-texto h2 { margin: 40px 0 10px; font-size: 24px; line-height: 1.2; letter-spacing: -.02em; }
+    .versao-texto h3 { margin: 26px 0 4px; font-size: 19px; font-weight: 400; }
+    .versao-texto p { margin: 0 0 12px; }
+    .versao-texto dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0 0 12px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+    .versao-texto dt { color: var(--muted); }
+    .versao-texto dd { margin: 0; }
+    .versao-texto ul { margin: 0 0 12px; padding-left: 20px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+    .versao-texto a { color: var(--purple-dark); text-decoration: underline; }
+
+    /* Título da página só para leitores de tela e para o Google (não aparece na tela). */
+    .so-leitor {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ── 07B. MODELO 3D — QUADRO NA PÁGINA DO PROJETO ─────
+       O quadro aparece ao entrar no projeto. Dentro dele roda o arquivo
+       visualizador do projeto (viewer3d-nome.html). A posição vem da linha modelo3dPosicao:
+       'lado'   = quadro fixo no canto esquerdo, carrossel passando ao lado
+       'abaixo' = quadro abaixo do carrossel de fotos
+       'acima'  = quadro acima do carrossel de fotos
+       O botão do canto amplia o quadro para a tela inteira; o X volta ao
+       tamanho normal. Ampliado, ele fica uma camada abaixo da ampliação dos
+       desenhos, que abre por cima. */
+    /* RODAPÉ MAIS PERTO DO CONTEÚDO (só no computador; no celular e no tablet nada muda).
+       Página do projeto: sem altura mínima de tela cheia. Assim o rodapé
+       ("© ... / Arquitetura & Design") sobe para logo abaixo das fotos, em vez de ficar depois
+       de um vão em branco. */
+    @media (min-width: 981px) {
+      .project-view.is-active { min-height: 0; }
+    }
+
+    /* Página inicial, só no computador: a faixa do carrossel deixa de ocupar a tela inteira e passa a
+       ter a altura das capas. Assim o rodapé também sobe para logo abaixo delas. */
+    @media (min-width: 981px) {
+      main.home-view { min-height: 0; }
+      main.home-view .project-strip {
+        min-height: 0;
+        height: auto;
+        padding-bottom: clamp(34px, 5vh, 64px) !important;
+      }
+    }
+
+    .modelo3d-box {
+      position: relative;
+      width: min(100%, 640px);
+      height: 334px;
+      margin: 4px auto 0;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .modelo3d-box[hidden] { display: none; }
+
+    /* Quadro acima do carrossel: a folga passa para baixo dele. */
+    .modelo3d-box.is-acima { margin: 0 auto 4px; }
+
+    /* Com o quadro acima ou abaixo, o espaço em branco no fim da área do projeto diminui. */
+    .project-view .project-stage.tem-modelo3d { padding-bottom: 12px !important; }
+
+    /* Quadro AO LADO do carrossel (telas largas). O quadro tem o tamanho de uma
+       foto do carrossel e fica fixo no canto esquerdo; o carrossel passa ao lado,
+       com a mesma folga que existe entre as fotos. A área do projeto passa a usar
+       a largura inteira da página, alinhada com o topo. Em monitores com mais de
+       1920 px de largura o conjunto fica centralizado, para o carrossel não ficar
+       mais largo que a sequência de fotos.
+       Se mudar o tamanho das fotos do carrossel, repita as medidas aqui. */
+    @media (min-width: 1100px) {
+      .project-view .project-stage.modelo3d-lado {
+        width: min(100%, 1920px);
+        display: grid;
+        grid-template-columns: clamp(260px, 29vw, 470px) minmax(0, 1fr);
+        column-gap: clamp(18px, 2.2vw, 30px);
+        align-items: start;
+        padding-inline: var(--edge) !important;
+        padding-bottom: clamp(34px, 5vh, 64px) !important;
+      }
+
+      .project-stage.modelo3d-lado .project-media-area {
+        grid-column: 2;
+        grid-row: 1;
+        min-width: 0;
+      }
+
+      .project-stage.modelo3d-lado .modelo3d-box:not(.is-ampliado) {
+        grid-column: 1;
+        grid-row: 1;
+        width: 100%;
+        height: clamp(340px, 36vw, 470px);                    /* navegador antigo, sem "dvh": mesma altura das fotos */
+        height: clamp(300px, calc(100dvh - 170px), 470px);
+        margin: 10px 0 0;
+      }
+    }
+
+    .modelo3d-stage {
+      position: absolute;
+      inset: 0;
+    }
+
+    .modelo3d-stage iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    .modelo3d-ampliar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(251, 248, 244, .9);
+      color: var(--purple-dark);
+      cursor: pointer;
+      transition: background .2s ease;
+    }
+
+    .modelo3d-ampliar:hover { background: var(--purple-pale); }
+
+    .modelo3d-top { display: none; }
+
+    /* Ampliado: o mesmo quadro ocupa a tela inteira (o modelo não recarrega). */
+    .modelo3d-box.is-ampliado {
+      position: fixed;
+      inset: 0;
+      z-index: 92;
+      width: auto;
+      height: auto;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .modelo3d-box.is-ampliado .modelo3d-top {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px var(--edge);
+      border-bottom: 1px solid rgba(46, 16, 101, .08);
+    }
+
+    .modelo3d-box.is-ampliado .modelo3d-stage {
+      position: relative;
+      inset: auto;
+      min-height: 0;
+    }
+
+    .modelo3d-box.is-ampliado .modelo3d-ampliar { display: none; }
+
+    .modelo3d-title {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .modelo3d-close {
+      flex: 0 0 auto;
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--purple-dark);
+      cursor: pointer;
+    }
+
+    body.modelo3d-open { overflow: hidden; }
+
+    /* No celular, o quadro ocupa a largura da página, abaixo (ou acima) do carrossel. */
+    @media (max-width: 660px) {
+      .modelo3d-box {
+        width: 100%;
+        height: 320px;
+        border-radius: 20px;
+      }
+
+      .modelo3d-box.is-ampliado .modelo3d-top { min-height: 64px; }
+    }
+
+    /* Celular deitado, ampliado: topo mais baixo, para sobrar altura para o modelo. */
+    @media (max-height: 480px) {
+      .modelo3d-box.is-ampliado .modelo3d-top { min-height: 52px; padding-block: 6px; }
+
+      .modelo3d-close { width: 40px; height: 40px; }
+    }
+
+
+    /* ── 04. PÁGINAS DO MENU: SOBRE / PROJETO / CONTATO ─── */
+    .system-view {
+      display: none;
+      min-height: calc(100vh - 70px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .system-view.is-active {
+      display: block;
+    }
+
+    .system-shell {
+      width: min(100%, var(--content-width));
+      margin-inline: auto;
+      padding: clamp(48px, 8vw, 118px) var(--edge);
+    }
+
+    .system-title {
+      margin: 8px 0 clamp(34px, 6vw, 76px);
+      font-size: clamp(72px, 13vw, 184px);
+      line-height: .82;
+      letter-spacing: -0.085em;
+      font-weight: 400;
+    }
+
+    .system-grid {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: clamp(30px, 7vw, 96px);
+      align-items: start;
+    }
+
+    .system-copy {
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(16px, 1.45vw, 20px);
+      line-height: 1.75;
+    }
+
+    .system-copy p {
+      margin: 0 0 20px;
+    }
+
+    .system-cards {
+      display: grid;
+      gap: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .system-card {
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .system-card span {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--purple);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .system-card h3 {
+      margin: 0;
+      font-size: clamp(26px, 3.2vw, 46px);
+      line-height: .96;
+      letter-spacing: -0.055em;
+      font-weight: 400;
+    }
+
+    .system-card p {
+      margin: 14px 0 0;
+      max-width: 620px;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .system-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+    }
+
+    .system-view[data-page="projetos"] .system-cards {
+      margin-top: clamp(-82px, -7vw, -34px);
+    }
+
+
+    /* ── Halo pulsante no link Contato do topo ── */
+    .top-link-destaque {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .top-link-destaque::before,
+    .top-link-destaque::after {
+      content: "";
+      position: absolute;
+      inset: -7px -13px;
+      border-radius: 999px;
+      border: 1.5px solid var(--purple);
+      opacity: 0;
+      pointer-events: none;
+      z-index: -1;
+      animation: haloContato 3.4s cubic-bezier(.22, .61, .36, 1) infinite;
+    }
+
+    .top-link-destaque::after {
+      animation-delay: 1.7s;
+    }
+
+    @keyframes haloContato {
+      0%   { transform: scale(.82); opacity: 0; }
+      18%  { opacity: .5; }
+      70%  { transform: scale(1.32); opacity: 0; }
+      100% { transform: scale(1.32); opacity: 0; }
+    }
+
+    /* Na propria pagina Contato o halo some: ja chegou no destino. */
+    body.page-contato .top-link-destaque::before,
+    body.page-contato .top-link-destaque::after {
+      animation: none;
+      opacity: 0;
+    }
+
+    /* Quem desligou animacoes no sistema ve so um anel discreto parado. */
+    @media (prefers-reduced-motion: reduce) {
+      .top-link-destaque::before {
+        animation: none;
+        opacity: .28;
+        transform: none;
+      }
+      .top-link-destaque::after {
+        display: none;
+      }
+    }
+
+    /* ── Botao flutuante CHAOS Decor Labs (pagina Contato) ── */
+    .chaos-float {
+      margin-top: clamp(28px, 4vw, 44px);
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 22px 12px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper, #f4efe8);
+      box-shadow: 0 10px 26px rgba(23, 18, 23, .12);
+      text-decoration: none;
+      color: inherit;
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .chaos-float:hover,
+    .chaos-float:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(23, 18, 23, .2);
+    }
+
+    .chaos-float-logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex: 0 0 auto;
+      background: #f0e7da;
+    }
+
+    .chaos-float-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .chaos-float-texto {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.3;
+    }
+
+    .chaos-float-texto strong {
+      font-size: 14px;
+      letter-spacing: .04em;
+    }
+
+    .chaos-float-texto span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .chaos-float-seta {
+      font-size: 17px;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    @media (max-width: 520px) {
+      .chaos-float {
+        width: 100%;
+        border-radius: 18px;
+      }
+    }
+
+    footer {
+      padding-block: 24px 88px;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+    }
+
+    /* ── 08. RESPONSIVO ─────────────────────────────────── */
+    @media (max-width: 980px) {
+      .hero,
+      .about,
+      .project-intro,
+      .project-media-area {
+        grid-template-columns: 1fr;
+      }
+
+      .project-side {
+        order: -1;
+      }
+
+      .vertical-carousel {
+        position: relative;
+        top: auto;
+        height: min(74vh, 640px);
+        min-height: 440px;
+      }
+
+      .media-block {
+        height: min(74vh, 640px);
+        min-height: 440px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .drawings-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .system-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .system-view[data-page="projetos"] .system-cards {
+        margin-top: 0;
+      }
+    }
+
+    @media (max-width: 660px) {
+      .site-header,
+      .project-header {
+        min-height: 64px;
+      }
+
+      .site-header {
+        height: auto;
+        min-height: auto;
+        flex-direction: column;
+        padding: 0;
+      }
+
+      .site-header-inner {
+        padding: 0 18px;
+        height: 60px;
+      }
+
+      .logo {
+        width: 46px;
+        height: 46px;
+      }
+
+      .logo img {
+        width: 32px;
+      }
+
+      .project-card {
+        flex-basis: 78vw;
+      }
+
+      .project-image {
+        height: 360px;
+      }
+
+      .project-header {
+        grid-template-columns: 1fr;
+        align-items: start;
+        gap: 10px;
+      }
+
+      .project-actions {
+        justify-content: flex-start;
+      }
+
+      .project-action {
+        min-height: 38px;
+        padding-inline: 14px;
+      }
+
+      .vertical-carousel,
+      .media-block {
+        height: 62vh;
+        min-height: 360px;
+      }
+
+      .media-block-label {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .lightbox-inner {
+        padding-top: 82px;
+      }
+
+      .lightbox-media {
+        height: 62vh;
+      }
+
+      .lightbox-arrow {
+        width: 44px;
+        height: 44px;
+      }
+
+      footer {
+        flex-direction: column;
+      }
+    }
+  
+
+    /* Ajustes v9: topo centralizado, logo menor, contato organizado e carrossel fluido */
+    .site-header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      justify-content: initial;
+      height: 68px;
+      padding-inline: var(--edge);
+    }
+
+    .site-header .logo {
+      justify-self: start;
+      width: clamp(34px, 3vw, 48px);
+      height: 28px;
+    }
+
+    .site-header .logo img {
+      width: 100%;
+      height: auto;
+      max-height: 28px;
+      object-fit: contain;
+    }
+
+    .top-actions {
+      grid-column: 2;
+      justify-self: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(24px, 4.2vw, 56px);
+      margin: 0;
+      text-align: center;
+    }
+
+    .top-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 0;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(12px, .95vw, 15px);
+      line-height: 1;
+      letter-spacing: 0;
+      text-transform: none;
+      white-space: nowrap;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .top-link:hover,
+    .top-link:focus-visible {
+      opacity: .6;
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .system-view[data-page="contato"] .system-shell {
+      padding-top: clamp(42px, 6vw, 82px);
+    }
+
+    .system-view[data-page="contato"] .system-title {
+      margin-bottom: clamp(24px, 4vw, 48px);
+    }
+
+    .system-view[data-page="contato"] .system-grid {
+      display: block;
+    }
+
+    .system-view[data-page="contato"] .system-copy {
+      max-width: 760px;
+      font-size: clamp(14px, 1.1vw, 17px);
+      line-height: 1.7;
+    }
+
+    .system-view[data-page="contato"] .system-cards {
+      margin-top: clamp(28px, 4vw, 48px);
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .system-view[data-page="contato"] .system-card {
+      min-height: 170px;
+      padding: clamp(18px, 2.2vw, 28px);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .system-view[data-page="contato"] .system-card h3 {
+      font-size: clamp(25px, 3vw, 42px);
+    }
+
+    .system-view[data-page="contato"] .system-card p {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .system-actions .button {
+      min-height: 42px;
+      padding-inline: 18px;
+      font-size: 12px;
+    }
+
+    @media (max-width: 760px) {
+      .site-header {
+        grid-template-columns: auto 1fr;
+        min-height: 66px;
+        gap: 16px;
+      }
+
+      .site-header .logo {
+        width: 40px;
+        height: 26px;
+      }
+
+      .top-actions {
+        grid-column: 2;
+        justify-self: end;
+        gap: 18px;
+      }
+
+      .top-link {
+        font-size: 12px;
+      }
+
+      .system-view[data-page="contato"] .system-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    /* Ajustes v10: aba Projetos e logo superior menor */
+    .site-header .logo {
+      width: clamp(34px, 3vw, 48px) !important;
+      height: 28px !important;
+    }
+
+    .site-header .logo img {
+      width: 100% !important;
+      height: auto !important;
+      max-height: 28px !important;
+      object-fit: contain;
+    }
+
+    @media (max-width: 760px) {
+      .site-header .logo {
+        width: 40px !important;
+        height: 26px !important;
+      }
+    }
+
+  
+    .project-intro {
+      display: none;
+    }
+
+    .project-stage {
+      padding-top: clamp(12px, 2vw, 26px);
+    }
+
+    .project-media-area {
+      display: block;
+    }
+
+    .project-side {
+      display: none;
+    }
+
+    .vertical-carousel {
+      position: relative;
+      top: auto;
+      height: auto;
+      min-height: 0;
+      overflow: hidden;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .vertical-carousel-track {
+      display: flex;
+      flex-direction: row;
+      gap: clamp(22px, 3vw, 60px);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding-bottom: 10px;
+      transform: none !important;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .vertical-carousel-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .media-block {
+      flex: 0 0 clamp(320px, 29vw, 620px);
+      min-height: clamp(360px, 34vw, 520px);
+      height: clamp(360px, 34vw, 520px);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      scroll-snap-align: start;
+    }
+
+    .media-block-label strong {
+      font-size: 9px;
+    }
+
+    .project-header {
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+    }
+
+    .project-header-left {
+      gap: clamp(14px, 2vw, 24px);
+    }
+
+    .project-name {
+      font-size: clamp(24px, 2vw, 34px);
+    }
+
+    .project-actions {
+      display: flex;
+      align-items: center;
+      gap: clamp(16px, 2vw, 28px);
+    }
+
+    .project-close {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .project-close:hover {
+      background: rgba(255,255,255,.5);
+    }
+
+    /* whatsapp-float: removido */
+
+    @media (max-width: 980px) {
+      .project-intro {
+        display: none;
+      }
+
+      .vertical-carousel {
+        height: auto;
+        min-height: 0;
+      }
+
+      .media-block {
+        min-height: 360px;
+        height: 360px;
+      }
+    }
+
+    @media (max-width: 660px) {
+      .project-header {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .project-actions {
+        justify-content: space-between;
+      }
+
+      .media-block {
+        flex-basis: 86vw;
+        min-height: 300px;
+        height: 300px;
+      }
+    }
+
+  
+    .project-image.has-real-image {
+      background: #e9e3dc;
+      filter: grayscale(1) contrast(.98) brightness(.98);
+    }
+
+    .project-card:hover .project-image.has-real-image,
+    .project-card:focus-visible .project-image.has-real-image,
+    .project-card:focus .project-image.has-real-image {
+      filter: grayscale(0) contrast(1) brightness(1);
+    }
+
+    .project-image.has-real-image::before {
+      display: none;
+    }
+
+    .project-image.has-real-image::after {
+      background: transparent;
+      mix-blend-mode: normal;
+    }
+
+    .project-cover-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+
+
+    /*
+      ─────────────────────────────────────────────
+      10. PROJETO ABERTO — MODELO ÚNICO DESKTOP + MOBILE
+      ─────────────────────────────────────────────
+      Este bloco garante que, ao clicar em um projeto no hall,
+      o desktop abra a mesma área que aparece no mobile:
+      topo do projeto + botões Infos/Desenhos/X + carrossel de fotos logo abaixo.
+    */
+
+    .project-view.is-active {
+      display: block !important;
+    }
+
+    .project-view .project-header {
+      grid-template-columns: auto 1fr auto !important;
+      min-height: 92px;
+      align-items: center;
+    }
+
+    .project-view .project-header-left {
+      grid-column: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .project-view .project-actions {
+      grid-column: 3;
+      display: flex !important;
+      align-items: center;
+      justify-content: flex-end;
+      gap: clamp(18px, 3vw, 52px);
+    }
+
+    .project-view .project-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 20px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(251, 248, 244, .62);
+      color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(15px, 1.25vw, 19px);
+      letter-spacing: 0;
+    }
+
+    .project-view .project-close {
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .project-view .project-stage {
+      padding-top: clamp(20px, 2.2vw, 34px) !important;
+    }
+
+    .project-view .project-intro,
+    .project-view .project-side {
+      display: none !important;
+    }
+
+    .project-view .project-media-area {
+      display: block !important;
+    }
+
+    .project-view .vertical-carousel {
+      position: relative !important;
+      top: auto !important;
+      height: auto !important;
+      min-height: 0 !important;
+      overflow: visible !important;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .project-view .vertical-carousel-track {
+      display: flex !important;
+      flex-direction: row !important;
+      gap: clamp(24px, 4.2vw, 72px);
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      transform: none !important;
+      padding: 0 0 14px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .project-view .vertical-carousel-track.is-auto-scrolling {
+      scroll-snap-type: none !important;
+    }
+
+    .project-view .vertical-carousel-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .project-view .media-block {
+      flex: 0 0 clamp(340px, 34vw, 650px) !important;
+      height: clamp(390px, 39vw, 560px) !important;
+      min-height: clamp(390px, 39vw, 560px) !important;
+      scroll-snap-align: start;
+      border: 1px solid var(--line) !important;
+      box-shadow: none !important;
+      background: rgba(251, 248, 244, .24);
+    }
+
+    .project-view .media-block.has-real-image::before,
+    .project-view .media-block.has-real-image::after {
+      display: none !important;
+    }
+
+    .project-view .media-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .project-view .media-block,
+    .project-view .media-block * {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .project-view .media-block {
+      cursor: zoom-in;
+    }
+
+    .project-view .media-block-label {
+      pointer-events: none;
+    }
+
+    .lightbox-media.has-real-image::before,
+    .lightbox-media.has-real-image::after {
+      display: none !important;
+    }
+
+    .lightbox-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      background: rgba(255,255,255,.04);
+    }
+
+    .project-view .media-block-label {
+      z-index: 2;
+    }
+
+    @media (max-width: 660px) {
+      .project-view .project-header {
+        grid-template-columns: 1fr !important;
+        min-height: auto;
+        gap: 16px;
+        padding-block: 18px;
+      }
+
+      .project-view .project-actions {
+        grid-column: 1;
+        width: 100%;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .project-view .project-action {
+        min-height: 44px;
+        padding-inline: 22px;
+        font-size: 17px;
+      }
+
+      .project-view .media-block {
+        flex-basis: 86vw !important;
+        height: 300px !important;
+        min-height: 300px !important;
+      }
+    }
+
+
+    /* ── 11. ABA PROJETOS / LISTA COM CAPA ─────────────────
+       Esta página é aberta pelo botão "Projetos" da barra superior.
+       Ela usa as mesmas capas do carrossel do hall. */
+    .system-view[data-page="projetos"] .system-shell {
+      padding-top: clamp(34px, 5vw, 78px);
+    }
+
+    .system-view[data-page="projetos"] .system-title {
+      margin-bottom: clamp(24px, 4vw, 52px);
+    }
+
+    .system-view[data-page="projetos"] .system-grid {
+      display: block;
+    }
+
+    .project-index {
+      display: grid;
+      grid-template-columns: minmax(280px, .72fr) minmax(360px, 1.28fr);
+      gap: clamp(28px, 5vw, 88px);
+      align-items: start;
+    }
+
+    .project-index-cover {
+      position: sticky;
+      top: 94px;
+      height: min(70vh, 660px);
+      min-height: 420px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: rgba(251,248,244,.34);
+      isolation: isolate;
+    }
+
+    .project-index-cover::before,
+    .project-index-cover::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    .project-index-cover::before {
+      background: var(--art, linear-gradient(135deg, rgba(46, 16, 101, .18), rgba(255,255,255,.36)));
+      background-size: cover;
+      background-position: center;
+      z-index: -2;
+    }
+
+    .project-index-cover::after {
+      background: linear-gradient(180deg, rgba(46,16,101,.02), rgba(46,16,101,.16));
+      mix-blend-mode: multiply;
+      z-index: -1;
+    }
+
+    .project-index-cover.has-real-image::before,
+    .project-index-cover.has-real-image::after {
+      display: none;
+    }
+
+    .project-index-cover img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .project-index-cover-caption {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: rgba(251, 248, 244, .78);
+      border: 1px solid rgba(23, 18, 23, .09);
+      backdrop-filter: blur(4px);
+      color: rgba(23, 18, 23, .76);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    .project-index-list {
+      display: grid;
+      border-top: 1px solid var(--line);
+    }
+
+    .project-index-row {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(120px, .55fr) auto;
+      gap: clamp(18px, 3vw, 44px);
+      align-items: center;
+      padding: clamp(16px, 2.1vw, 28px) 0;
+      text-align: left;
+      transition: opacity .18s ease;
+    }
+
+    .project-index-row:hover,
+    .project-index-row:focus-visible {
+      opacity: .58;
+      outline: none;
+    }
+
+    .project-index-row strong {
+      font-size: clamp(24px, 3vw, 44px);
+      line-height: .95;
+      letter-spacing: -0.055em;
+      font-weight: 400;
+    }
+
+    .project-index-row span {
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .project-index-row em {
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-style: normal;
+      justify-self: end;
+      white-space: nowrap;
+    }
+
+    /* Correção do logo no mobile: o SVG tinha margem interna apertada e podia parecer cortado. */
+    .site-header .logo {
+      width: clamp(54px, 5vw, 72px) !important;
+      height: 42px !important;
+      overflow: visible !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+    }
+
+    .site-header .logo img {
+      width: 100% !important;
+      height: auto !important;
+      max-height: none !important;
+      object-fit: contain !important;
+      display: block !important;
+    }
+
+    @media (max-width: 760px) {
+      .site-header .logo {
+        width: 64px !important;
+        height: 44px !important;
+      }
+
+      .top-actions {
+        gap: 16px;
+      }
+
+      .project-index {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+
+      .project-index-cover {
+        position: relative;
+        top: auto;
+        height: 56vh;
+        min-height: 320px;
+      }
+
+      .project-index-row {
+        grid-template-columns: 1fr auto;
+        gap: 8px 16px;
+      }
+
+      .project-index-row span {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .site-header .logo {
+        width: 58px !important;
+        height: 40px !important;
+      }
+
+      .top-link {
+        font-size: 11px !important;
+      }
+
+      .project-index-row strong {
+        font-size: 27px;
+      }
+    }
+
+  
+
+    /* ── AJUSTE V6 / FOTOS SEM CONTORNO BRANCO ─────────────────────────
+       Nesta parte eu removo o contorno/borda das fotos da página interna
+       e deixo apenas a imagem com bordas arredondadas sobre fundo sólido.
+    */
+    .project-view,
+    .project-view .project-stage,
+    .project-view .vertical-carousel {
+      background: transparent !important;
+    }
+
+    .project-view .media-block {
+      border: 0 !important;
+      outline: 0 !important;
+      border-radius: 18px !important;
+      overflow: hidden !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .project-view .media-block::before,
+    .project-view .media-block::after {
+      border-radius: inherit !important;
+    }
+
+    .project-view .media-img {
+      border-radius: inherit !important;
+      display: block;
+    }
+
+    @media (max-width: 660px) {
+      .project-view .media-block {
+        border-radius: 14px !important;
+      }
+    }
+
+  
+
+    /* ── AJUSTE V8 / BACKGROUND COM ART ───────────────────────────────
+       A arte SVG enviada fica no fundo geral do sistema. As views principais
+       ficam transparentes para a arte aparecer no lugar do fundo branco.
+    */
+    .home-view,
+    .system-view,
+    .project-view {
+      background: transparent;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        background-attachment: scroll;
+      }
+    }
+
+  
+/* ── AJUSTES V10: hall sem rolagem vertical, fundo limpo e fotos sem moldura ── */
+/* Variáveis --bg e --paper já atualizadas no :root principal acima. */
+
+html,
+body {
+  min-height: 100%;
+  background: #f4efe8 !important;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.home-view {
+  min-height: calc(100vh - 68px);
+  overflow: hidden;
+  background: #f4efe8 !important;
+}
+
+.project-strip {
+  min-height: calc(100vh - 68px);
+  height: calc(100vh - 68px);
+  padding: clamp(22px, 3vw, 38px) 0 0 !important;
+  overflow: hidden !important;
+  background: #f4efe8 !important;
+  border-bottom: 0 !important;
+}
+
+.carousel-shell {
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.project-track {
+  height: 100%;
+  align-items: flex-start;
+  padding-bottom: 0 !important;
+  overflow-y: hidden !important;
+}
+
+.project-card {
+  flex-basis: clamp(190px, 18vw, 260px) !important;
+}
+
+.project-image {
+  height: min(66vh, 430px) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.project-image,
+.project-image img,
+.project-image.has-real-image {
+  border-radius: 18px !important;
+  overflow: hidden;
+  background-color: transparent !important;
+}
+
+.project-title {
+  color: #6f5f4e !important;
+  margin-top: 10px !important;
+  font-size: 14px !important;
+}
+
+.project-meta {
+  color: rgba(111, 95, 78, .72) !important;
+  font-size: 10px !important;
+}
+
+.carousel-controls {
+  display: none !important;
+}
+
+.project-view {
+  background: #f4efe8 !important;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.project-stage {
+  padding-top: clamp(14px, 2vw, 26px) !important;
+  padding-bottom: 24px !important;
+}
+
+.project-media-area {
+  overflow: hidden;
+}
+
+.vertical-carousel {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.vertical-carousel-track {
+  gap: clamp(18px, 2.4vw, 34px) !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.media-block {
+  flex-basis: clamp(240px, 30vw, 440px) !important;
+  height: min(58vh, 440px) !important;
+  min-height: 330px !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  background-color: transparent !important;
+}
+
+.media-block img,
+.media-block picture {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  border-radius: 18px !important;
+}
+
+.project-header {
+  background: rgba(244, 239, 232, .92) !important;
+  border-bottom: 1px solid rgba(111, 95, 78, .16) !important;
+}
+
+.site-header {
+  background: rgba(244, 239, 232, .92) !important;
+  border-bottom: 1px solid rgba(111, 95, 78, .16) !important;
+}
+
+@media (max-width: 760px) {
+  .home-view,
+  .project-strip {
+    min-height: calc(100dvh - 66px);
+    height: calc(100dvh - 66px);
+  }
+
+  .project-card {
+    flex-basis: 64vw !important;
+  }
+
+  .project-image {
+    height: min(62dvh, 430px) !important;
+  }
+
+  .media-block {
+    flex-basis: 82vw !important;
+    height: min(54dvh, 420px) !important;
+    min-height: 300px !important;
+  }
+}
+
+  
+/* ── AJUSTES V11: imagens corrigidas, hall reto, projeto arredondado ───────── */
+.home-view,
+.project-strip,
+.project-view,
+.system-view {
+  background: #f4efe8 !important;
+}
+
+.project-image,
+.project-image img,
+.project-image.has-real-image,
+.project-cover-img {
+  border-radius: 0 !important;
+}
+
+.project-card .project-image {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.project-card .project-image.has-real-image {
+  background: transparent !important;
+}
+
+.project-card .project-cover-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+.project-view .media-block {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+.project-view .media-block.has-real-image::before,
+.project-view .media-block.has-real-image::after {
+  display: none !important;
+}
+
+.project-view .media-img,
+.project-view .media-block img,
+.project-view .media-block picture {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  border-radius: 18px !important;
+}
+
+.project-index-cover,
+.project-index-cover img {
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+.vertical-carousel,
+.vertical-carousel-track {
+  background: transparent !important;
+}
+
+@media (max-width: 760px) {
+  .project-image,
+  .project-image img,
+  .project-image.has-real-image,
+  .project-cover-img {
+    border-radius: 0 !important;
+  }
+
+  .project-view .media-block,
+  .project-view .media-img,
+  .project-view .media-block img {
+    border-radius: 16px !important;
+  }
+}
+
+  
+
+/* ── AJUSTE V12: carrossel interno dos projetos no enquadramento da referência ── */
+.project-view .project-stage {
+  width: min(100%, 1320px);
+  margin-inline: auto;
+  padding: 18px 18px 28px !important;
+}
+
+.project-view .project-media-area {
+  width: 100%;
+  overflow: hidden;
+}
+
+.project-view .vertical-carousel {
+  overflow: hidden !important;
+}
+
+.project-view .vertical-carousel-track {
+  gap: clamp(18px, 2.2vw, 30px) !important;
+  padding: 10px 0 14px !important;
+  align-items: flex-start;
+}
+
+.project-view .media-block {
+  flex: 0 0 clamp(260px, 29vw, 470px) !important;
+  height: clamp(340px, 36vw, 470px) !important;
+  min-height: clamp(340px, 36vw, 470px) !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 24px !important;
+  overflow: hidden !important;
+}
+
+.project-view .media-block img,
+.project-view .media-block .media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 24px !important;
+}
+
+.project-view .media-block-label {
+  left: 12px !important;
+  right: 12px !important;
+  bottom: 12px !important;
+}
+
+@media (max-width: 980px) {
+  .project-view .project-stage {
+    padding-inline: 16px !important;
+  }
+
+  .project-view .media-block {
+    flex-basis: clamp(240px, 42vw, 420px) !important;
+    height: clamp(320px, 42vw, 420px) !important;
+    min-height: clamp(320px, 42vw, 420px) !important;
+  }
+}
+
+@media (max-width: 660px) {
+  .project-view .project-stage {
+    padding-inline: 14px !important;
+    padding-top: 10px !important;
+  }
+
+  .project-view .vertical-carousel-track {
+    gap: 16px !important;
+    padding-top: 8px !important;
+  }
+
+  .project-view .media-block {
+    flex-basis: 78vw !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    border-radius: 20px !important;
+  }
+
+  .project-view .media-block img,
+  .project-view .media-block .media-img {
+    border-radius: 20px !important;
+  }
+}
+
+
+
+/* ── AJUSTE V14: carrossel interno em movimento contínuo ── */
+.project-view .vertical-carousel-track.is-auto-scrolling {
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+}
+
+
+
+/* ── AJUSTE V15: movimento real e visível no carrossel interno do projeto ── */
+@keyframes projectCarouselMarquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+.project-view .vertical-carousel {
+  overflow: hidden !important;
+}
+
+.project-view .vertical-carousel-track.is-auto-scrolling {
+  overflow-x: visible !important;
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+  animation: projectCarouselMarquee 18s linear infinite !important;
+  will-change: transform;
+}
+
+.project-view .vertical-carousel-track.is-auto-scrolling:hover {
+  animation-play-state: running !important;
+}
+
+.project-view .vertical-carousel-track.is-paused {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-view .vertical-carousel-track.is-auto-scrolling {
+    animation: none !important;
+  }
+}
+
+
+
+/* ── AJUSTE V16: movimento real do carrossel interno via JavaScript ── */
+.project-view .vertical-carousel-track.is-auto-scrolling {
+  animation: none !important;
+  transition: none !important;
+  overflow-x: visible !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+  will-change: transform;
+}
+
+
+/* ── AJUSTE V17: loop infinito sem salto + altura sem corte ───────────────
+   - O JS mede o início da segunda sequência de imagens, então o reset do loop
+     acontece exatamente no ponto certo.
+   - A altura passa a respeitar a altura da tela para não cortar as fotos embaixo.
+*/
+.project-view .project-stage {
+  padding-top: clamp(14px, 2vw, 22px) !important;
+  padding-bottom: clamp(34px, 5vh, 64px) !important;
+}
+
+.project-view .project-media-area,
+.project-view .vertical-carousel {
+  overflow: hidden !important;
+}
+
+.project-view .vertical-carousel-track {
+  width: max-content !important;
+  max-width: none !important;
+  flex-wrap: nowrap !important;
+  overflow: visible !important;
+  transform: translate3d(0, 0, 0);
+}
+
+.project-view .vertical-carousel-track.is-auto-scrolling {
+  animation: none !important;
+  transition: none !important;
+  overflow: visible !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+  will-change: transform;
+}
+
+.project-view .vertical-carousel-track.is-auto-scrolling .media-block {
+  scroll-snap-align: none !important;
+}
+
+.project-view .media-block {
+  height: clamp(300px, calc(100dvh - 170px), 470px) !important;
+  min-height: 0 !important;
+}
+
+@media (max-width: 980px) {
+  .project-view .media-block {
+    height: clamp(290px, calc(100dvh - 180px), 430px) !important;
+    min-height: 0 !important;
+  }
+}
+
+@media (max-width: 660px) {
+  .project-view .project-stage {
+    padding-top: 10px !important;
+    padding-bottom: 34px !important;
+  }
+
+  .project-view .media-block {
+    height: clamp(260px, calc(100dvh - 220px), 380px) !important;
+    min-height: 0 !important;
+  }
+}
+
+/* ── AJUSTE FAIXA HARLEQUIM: largura total + aparece no mobile ──────────────
+   Um ajuste anterior transformava a barra superior em "grid", o que fazia a
+   faixa de listras ocupar só uma fatia da barra (e quase sumir no celular).
+   Aqui a barra volta a empilhar: FAIXA em cima (largura inteira) + barra com
+   logo e menu embaixo. Vale para desktop e mobile. */
+.site-header {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  grid-template-columns: none !important;
+}
+
+/* A faixa listrada ocupa 100% da largura da barra, em qualquer tela */
+.site-header .harlequin-stripe {
+  display: block !important;
+  width: 100% !important;
+  height: 44px !important;
+  flex: 0 0 auto !important;
+  grid-column: auto !important;
+}
+
+/* Barra interna (logo + navegação) fica logo abaixo da faixa */
+.site-header .site-header-inner {
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 68px !important;
+  padding-inline: var(--edge) !important;
+}
+
+.site-header .site-header-inner .logo {
+  grid-column: 1 !important;
+  justify-self: start !important;
+}
+
+.site-header .site-header-inner .top-actions {
+  grid-column: 2 !important;
+  justify-self: center !important;
+}
+
+@media (max-width: 760px) {
+  .site-header .site-header-inner {
+    grid-template-columns: auto 1fr !important;
+    height: 60px !important;
+    padding-inline: 18px !important;
+    gap: 14px !important;
+  }
+
+  .site-header .site-header-inner .top-actions {
+    grid-column: 2 !important;
+    justify-self: end !important;
+    gap: 16px !important;
+  }
+
+  /* faixa um pouco mais baixa no celular, mas ainda de ponta a ponta */
+  .site-header .harlequin-stripe {
+    height: 34px !important;
+  }
+}
+
+
+/* ── SOBRE MIM: título + foto direita + bio largura total ───── */
+.system-view[data-page="sobre"] {
+  min-height: calc(100vh - 112px);
+  overflow: visible;
+}
+
+.system-view[data-page="sobre"] .system-shell {
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
+
+/* sobre ocupa a largura inteira: anula o grid de 2 colunas herdado */
+.system-view[data-page="sobre"] .system-grid {
+  display: block;
+}
+
+.sobre-layout {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 112px);
+  overflow: visible;
+  padding: clamp(36px, 5vw, 64px) clamp(28px, 4vw, 52px) clamp(28px, 4vw, 48px);
+}
+
+/* ── Decorativos arquitetônicos: proporção áurea ── */
+.sobre-deco {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.sobre-top, .sobre-heading, .sobre-foto-wrap,
+.sobre-divider, .sobre-bio {
+  position: relative;
+  z-index: 1;
+}
+
+.sobre-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(20px, 3vw, 40px);
+  margin-bottom: clamp(20px, 3vw, 36px);
+}
+
+.sobre-heading {
+  margin: 0;
+  font-size: clamp(64px, 11vw, 136px);
+  line-height: .95;
+  letter-spacing: -0.075em;
+  font-weight: 400;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.sobre-foto-wrap {
+  flex-shrink: 0;
+  width: clamp(160px, 17vw, 230px);
+  aspect-ratio: 1 / 1.08;
+  position: relative;
+  overflow: hidden;
+  background: #e5ddd4;
+}
+
+.sobre-foto-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.sobre-divider {
+  border: 0;
+  border-top: 1px solid rgba(46, 16, 101, .12);
+  margin: 0 0 clamp(18px, 2.5vw, 30px);
+  flex-shrink: 0;
+}
+
+.sobre-bio {
+  flex: 1 0 auto;
+  overflow: visible;
+  display: grid;
+  align-content: start;
+  gap: clamp(10px, 1.4vw, 18px);
+}
+
+.sobre-bio p {
+  margin: 0;
+  color: var(--muted);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(13px, 1.05vw, 15.5px);
+  line-height: 1.75;
+}
+
+@media (max-width: 760px) {
+  .system-view[data-page="sobre"] {
+    height: auto;
+    overflow: visible;
+  }
+  .sobre-layout {
+    padding: 28px 22px 48px;
+  }
+  .sobre-top {
+    gap: 16px;
+  }
+  .sobre-heading {
+    font-size: clamp(52px, 13vw, 82px);
+  }
+  .sobre-foto-wrap {
+    width: clamp(100px, 22vw, 140px);
+  }
+}
+
+
+
+    /* ── 11. FITA "EM ANDAMENTO" (projetos com andamento: true) ──
+       As fitas ficam presas dentro da capa e crescem/encolhem junto com ela
+       (unidade cqw = % da largura da capa), então mantêm a mesma escala no
+       computador, no celular, na aba Projetos e na página do projeto. */
+    .capa-wrap {
+      position: relative;
+      overflow: hidden;
+      container-type: inline-size;
+    }
+
+    .project-index-cover,
+    .project-view .media-block.is-capa {
+      container-type: inline-size;
+    }
+
+    .fita-andamento {
+      position: absolute;
+      left: -45%;
+      right: -45%;
+      z-index: 3;
+      display: block;
+      padding: .28em 0;
+      font-size: max(8px, 3.1cqw);
+      line-height: 1.1;
+      background: #E10600;
+      border-top: max(1.5px, .55cqw) solid #161214;
+      border-bottom: max(1.5px, .55cqw) solid #161214;
+      box-shadow: 0 .5cqw 1.6cqw rgba(0, 0, 0, .25);
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .fita-andamento span {
+      display: inline-block;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      letter-spacing: .18em;
+      animation: fitaCorre 16s linear infinite alternate;
+    }
+
+    /* Posição de cada fita dentro da capa (topo, meio e parte de baixo) */
+    .fita-andamento.f1 { top: 9%;  transform: rotate(-26deg); }
+    .fita-andamento.f2 { top: 43%; transform: rotate(-14deg); }
+    .fita-andamento.f3 { top: 67%; transform: rotate(-26deg); }
+    .fita-andamento.f2 span { animation-direction: alternate-reverse; }
+
+    @keyframes fitaCorre {
+      from { transform: translateX(-5%); }
+      to   { transform: translateX(5%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fita-andamento span { animation: none; }
+    }
+
+    /* Página do projeto: a capa ilustrada aparece inteira, na proporção dela */
+    .project-view .media-block.is-capa {
+      flex: 0 0 auto !important;
+      width: auto !important;
+      aspect-ratio: 600 / 980;
+    }
+
+    .project-view .media-block.is-capa .media-img {
+      object-fit: cover !important;
+    }
+
+    /* Capas ilustradas já trazem o nome do projeto desenhado: sem etiqueta por cima */
+    .project-index-cover.is-andamento .project-index-cover-caption,
+    .project-view .media-block.is-capa .media-block-label { display: none; }
+
+    /* Cartão de texto ao lado da capa dos projetos em andamento */
+    .andamento-card {
+      flex: 0 0 clamp(280px, 30vw, 460px);
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      padding: clamp(22px, 3vw, 40px);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.28);
+      scroll-snap-align: start;
+    }
+    .andamento-selo {
+      align-self: flex-start;
+      padding: 6px 12px;
+      background: #E10600;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .andamento-card h3 {
+      margin: 0;
+      font-size: clamp(28px, 3vw, 44px);
+      line-height: 1;
+      letter-spacing: -0.05em;
+      font-weight: 400;
+    }
+    .andamento-card p {
+      margin: 0;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .andamento-card .andamento-nota { font-size: 13px; font-style: italic; }
+    @media (max-width: 660px) { .andamento-card { flex-basis: 86vw; } }
+
+
+
+    /* Celular: capa em cima e texto embaixo, sem cortar nada para o lado */
+    @media (max-width: 760px) {
+      .project-view .vertical-carousel-track.is-andamento {
+        flex-direction: column !important;
+        flex-wrap: nowrap !important;
+        align-items: center;
+        overflow: visible !important;
+        scroll-snap-type: none !important;
+        gap: 18px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+      }
+      .project-view .vertical-carousel-track.is-andamento .media-block.is-capa {
+        width: min(100%, 420px) !important;
+        height: auto !important;
+        min-height: 0 !important;
+        flex: 0 0 auto !important;
+      }
+      .project-view .vertical-carousel-track.is-andamento .andamento-card {
+        flex: 0 0 auto;
+        width: 100%;
+        align-self: stretch;
+        padding: 22px 20px;
+      }
+      .andamento-card h3 { font-size: 30px; }
+      .andamento-card p { font-size: 15px; }
+    }
+
+    /* Painéis Infos/Desenhos fechados: sem sombra vazando na borda direita da tela */
+    .info-panel:not(.is-open),
+    .drawings-panel:not(.is-open) {
+      box-shadow: none;
+    }
+
+    /* Rodapé com a mesma margem lateral do resto do site */
+    footer { padding-inline: var(--edge); }
+</style>
+</head>
+
+<body>
+  <!-- ── BARRA SUPERIOR FIXA ───────────────────────────── -->
+  <header class="site-header home-header">
+    <div class="harlequin-stripe" aria-hidden="true"></div>
+    <div class="site-header-inner">
+      <a class="logo" href="#inicio" aria-label="Carlos A. Boico"><img src="assets/logo.svg" alt="Carlos A. Boico" /></a>
+      <nav class="top-actions" aria-label="Informações do site">
+        <a class="top-link" href="#sobre" data-system-page="sobre" aria-label="Abrir Sobre mim">Sobre mim</a>
+        <a class="top-link" href="#projetos" data-system-page="projetos" aria-label="Abrir Projetos">Projetos</a>
+        <a class="top-link top-link-destaque" href="#contato" data-system-page="contato" aria-label="Abrir Contato">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="menu-panel" aria-hidden="true">
+    <div class="menu-panel__top">
+      <a class="logo" href="#inicio" aria-label="Carlos A. Boico"><img src="assets/logo.svg" alt="Carlos A. Boico" /></a>
+      <button class="close-menu" type="button" aria-label="Fechar menu">Fechar</button>
+    </div>
+    <nav class="menu-links" aria-label="Menu principal">
+      <a href="#sobre" data-system-page="sobre">Sobre mim</a>
+      <a href="#projetos" data-system-page="projetos">Projetos</a>
+      <a href="#contato" data-system-page="contato">Contato</a>
+    </nav>
+    <p class="menu-note">Portfólio digital de Carlos A. Boico. O hall apresenta os projetos e cada capa abre uma página interna com fotos, renders, informações do terreno e desenhos.</p>
+  </div>
+
+  <!-- ── HALL DE ENTRADA: SOMENTE O CARROSSEL ─────────── -->
+  <main id="inicio" class="home-view">
+    <h1 class="so-leitor">Carlos A. Boico — Portfólio de Arquitetura e Urbanismo</h1>
+    <section class="project-strip" id="projetos" aria-label="Carrossel de projetos">
+      <div class="carousel-shell">
+        <div class="project-track" id="projectTrack" aria-live="polite"></div>
+        <div class="carousel-controls" aria-label="Controles do carrossel">
+          <button type="button" id="prevProject" aria-label="Projeto anterior">←</button>
+          <button type="button" id="nextProject" aria-label="Próximo projeto">→</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ══ VERSÃO EM TEXTO DO PORTFÓLIO ═════════════════════
+       Os mesmos textos do site, escritos direto no HTML: quem é você, o "Sobre mim",
+       os projetos (com descrição, infos e imagens) e o contato.
+       PARA QUE SERVE: o Google, as pré-visualizações de link e os leitores automáticos
+       enxergam este texto sem depender do JavaScript.
+       NA TELA: com o site funcionando normalmente, este bloco fica escondido.
+       É UMA CÓPIA dos textos de "const identidade", "const systemPages" e "const projects".
+       Ao abrir, o próprio site refaz este bloco com os textos atuais (é isso que o Google
+       vê depois de rodar o JavaScript). A cópia escrita aqui vale para quem lê o arquivo
+       sem rodar nada: depois de mudar um texto lá, atualize a cópia daqui.
+       JEITO RÁPIDO DE ATUALIZAR: abra o site, aperte F12, entre na aba "Console", digite
+       copy(montarVersaoTexto()) e aperte Enter. Depois apague o que está entre a linha
+       SECTION abaixo e a linha de fechamento dela, e cole no lugar. -->
+  <section class="versao-texto" id="versaoTexto" aria-label="Portfólio em texto">
+    <h1>Carlos A. Boico — Portfólio de Arquitetura e Urbanismo</h1>
+    <p>Estudante de Arquitetura e Urbanismo e ilustrador em Campo Grande/MS.</p>
+
+    <h2>Sobre mim</h2>
+    <p>Tenho 22 anos e curso Arquitetura e Urbanismo, mas minha formação começa muito antes do curso — sou ilustrador profissional há mais de 12 anos, com passagem pelo design gráfico, comunicação visual e detalhamento técnico de projetos. Esse percurso não é periférico: é o que define meu olhar sobre o projeto.</p>
+    <p>Entendo arquitetura como linguagem. O traço não é apenas representação — é argumento. A linha carrega tanto rigor construtivo quanto intenção estética, e foi ilustrando que aprendi isso antes de qualquer teoria.</p>
+    <p>Minha produção se alinha a referências que transitam entre o vernacular e o erudito: a poética brutalista dos anos 70–80, a gramática gráfica do pen-plot, a lógica do paisagismo funcional como sistema, e a arte gráfica de autores que compreendem o espaço como elemento narrativo. Estou montando minha carga intelectual de curso com a mesma atenção que dedico a uma prancha — camada por camada, com rigor e intenção.</p>
+
+    <h2>Projetos</h2>
+    <article>
+      <h3>Salão Vitalina de Beleza</h3>
+      <p>Interiores · Salão de beleza</p>
+      <p>Projeto de interiores para salão de beleza em 27,94 m², a ser implantado em Lisboa, Portugal. A cliente reside na França e pediu que essa vivência fosse traduzida no ambiente: a composição parte da boiserie nas paredes, presente em todo o projeto, somada a marcenaria clara, metais dourados e estofados em couro. A vegetação — com destaque para a kentia forsteriana — completa o repertório e suaviza o ambiente compacto.</p>
+      <dl>
+        <dt>Área</dt><dd>27,94 m²</dd>
+        <dt>Localização</dt><dd>Lisboa — Portugal</dd>
+        <dt>Tipologia</dt><dd>Salão de beleza</dd>
+        <dt>Referência</dt><dd>Repertório francês, trazido pela cliente</dd>
+        <dt>Etapa</dt><dd>Experiência de projeto em estágio — Campo Grande/MS, 2026</dd>
+        <dt>Autoria</dt><dd>Projeto autoral com auxílio</dd>
+        <dt>Programas</dt><dd>SketchUp, Enscape e Adobe Illustrator</dd>
+      </dl>
+      <ul>
+        <li><a href="assets/vitalina-projeto-final.jpg">Render final do Salão Vitalina de Beleza: balcão branco, poltronas caramelo, lavatórios pretos diante de jardim vertical e espelhos com boiserie</a></li>
+        <li><a href="assets/vitalina-1o-render-cliente.jpg">Primeiro render do Salão Vitalina apresentado à cliente: balcão branco, poltronas claras, lavatórios pretos e parede terracota com arcos dourados</a></li>
+        <li><a href="assets/vitalina-render-conceito.jpg">Render conceito do Salão Vitalina: boiserie branca, lustre dourado, poltronas claras, balcão ripado e lavatórios pretos diante de painéis rosados</a></li>
+        <li><a href="assets/vitalina-render-conceito-angular.jpg">Render conceito do Salão Vitalina em ângulo aberto: janela ampla, parede terracota com arcos dourados, lustre e cadeiras pretas com estrutura dourada</a></li>
+        <li><a href="assets/vitalina-planta-baixa.jpg">Planta baixa do Salão Vitalina de Beleza, com 27,94 m²: banheiros, lavabo, lavatórios, bancadas de corte, espera e recepção</a></li>
+      </ul>
+    </article>
+    <article>
+      <h3>Reforma Unifamiliar</h3>
+      <p>Arquitetura · Em andamento · Reforma residencial</p>
+      <p>Reforma de residência unifamiliar em Campo Grande/MS para uma família de quatro pessoas e seus pets. O projeto parte da arquitetura dos anos 70, com a cozinha em linguagem modernista e muita textura nos acabamentos. A cliente gosta de Art Déco, e o estilo entrou no projeto em arcos, geometrias e detalhes.</p>
+      <dl>
+        <dt>Área</dt><dd>150 m²</dd>
+        <dt>Localização</dt><dd>Campo Grande — MS</dd>
+        <dt>Tipologia</dt><dd>Reforma residencial unifamiliar</dd>
+        <dt>Programa</dt><dd>Família de 4 pessoas + pets</dd>
+        <dt>Conceito</dt><dd>Arquitetura dos anos 70, cozinha modernista e bastante textura</dd>
+        <dt>Referência</dt><dd>Art Déco, trazido pela cliente</dd>
+        <dt>Status</dt><dd>Em andamento</dd>
+        <dt>Ano</dt><dd>2026</dd>
+      </dl>
+      <ul>
+        <li><a href="assets/capa-reforma-unifamiliar.svg">Capa ilustrada do projeto Reforma Unifamiliar: fachada de casa com porta em arco, janela redonda e painel de ripas</a></li>
+      </ul>
+    </article>
+    <article>
+      <h3>Interiores Dopamine</h3>
+      <p>Interiores · Em andamento · Interiores residencial</p>
+      <p>Projeto de interiores residencial em Campo Grande/MS guiado pelo dopamine color. O projeto usa cores vivas e alegres, em espaços livres de circulação e com a luz natural como protagonista.</p>
+      <dl>
+        <dt>Área</dt><dd>40 m²</dd>
+        <dt>Localização</dt><dd>Campo Grande — MS</dd>
+        <dt>Tipologia</dt><dd>Interiores residencial</dd>
+        <dt>Conceito</dt><dd>Dopamine color</dd>
+        <dt>Diretrizes</dt><dd>Espaços livres e bastante iluminação natural</dd>
+        <dt>Status</dt><dd>Em andamento</dd>
+        <dt>Ano</dt><dd>2026</dd>
+      </dl>
+      <ul>
+        <li><a href="assets/capa-interiores.svg">Capa ilustrada do projeto Interiores Dopamine: sala cor-de-rosa com janela, sofá azul, tapete amarelo e porta verde em arco</a></li>
+      </ul>
+    </article>
+    <article>
+      <h3>Paisagismo Residencial</h3>
+      <p>Paisagismo · Em andamento · Área externa</p>
+      <p>Paisagismo residencial em Campo Grande/MS que mantém parte da vegetação existente no terreno e acrescenta um canteiro e trepadeiras. A ideia é somar ao que o lugar já tem, e não recomeçar do zero.</p>
+      <dl>
+        <dt>Área</dt><dd>70 m²</dd>
+        <dt>Localização</dt><dd>Campo Grande — MS</dd>
+        <dt>Tipologia</dt><dd>Paisagismo residencial</dd>
+        <dt>Conceito</dt><dd>Preservar a vegetação existente no local</dd>
+        <dt>Intervenções</dt><dd>Novo canteiro e trepadeiras</dd>
+        <dt>Status</dt><dd>Em andamento</dd>
+        <dt>Ano</dt><dd>2026</dd>
+      </dl>
+      <ul>
+        <li><a href="assets/capa-paisagismo.svg">Capa ilustrada do projeto Paisagismo Residencial: árvore existente, canteiro com flores e treliça com trepadeira</a></li>
+      </ul>
+    </article>
+    <article>
+      <h3>Móveis Planejados</h3>
+      <p>Mobiliário · Em andamento · Studio criativo 3D</p>
+      <p>Construção de móveis planejados para um studio criativo 3D, com marcenaria pensada para a rotina de produção e exposição das peças.</p>
+      <dl>
+        <dt>Tipologia</dt><dd>Móveis planejados</dd>
+        <dt>Cliente</dt><dd>Studio criativo 3D</dd>
+        <dt>Escopo</dt><dd>Projeto e construção do mobiliário</dd>
+        <dt>Status</dt><dd>Em andamento</dd>
+        <dt>Ano</dt><dd>2026</dd>
+      </dl>
+      <ul>
+        <li><a href="assets/capa-moveis-planejados.svg">Capa ilustrada do projeto Móveis Planejados: estante de nichos com gaveteiro e bancada com impressora 3D</a></li>
+      </ul>
+    </article>
+
+    <h2>Contato</h2>
+    <p><a href="https://wa.me/message/DAOAAENEEHYBA1">Solicitar orçamento pelo WhatsApp</a></p>
+    <p><a href="mailto:carlos.arquitetocg@hotmail.com">carlos.arquitetocg@hotmail.com</a></p>
+    <p><a href="https://www.instagram.com/boicostar_/">Instagram @boicostar_</a></p>
+  </section>
+
+  <!-- ── PÁGINAS INTERNAS DO MENU: SOBRE MIM / PROJETOS / CONTATO ── -->
+  <section class="system-view" id="systemPage" aria-label="Página do sistema">
+    <div class="system-shell">
+      <p class="section-label" id="systemLabel">Sobre mim</p>
+      <h1 class="system-title" id="systemTitle">Sobre mim</h1>
+      <div class="system-grid" id="systemBody"></div>
+    </div>
+  </section>
+
+  <!-- ── PÁGINA INTERNA DO PROJETO SELECIONADO ────────── -->
+  <section class="project-view" id="projectPage" aria-label="Página do projeto">
+    <header class="project-header">
+      <div class="project-header-left">
+        <a class="logo" href="#inicio" id="homeLogo" aria-label="Voltar para o hall"><img src="assets/logo.svg" alt="Carlos A. Boico" /></a>
+        <p class="project-name" id="projectName"></p>
+      </div>
+      <div class="project-actions">
+        <button class="project-action" type="button" id="infoButton">Infos</button>
+        <button class="project-action" type="button" id="drawingsButton">Desenhos</button>
+        <button class="project-close" type="button" id="closeProjectPage" aria-label="Fechar projeto">×</button>
+      </div>
+    </header>
+
+    <div class="project-stage">
+      <div class="project-intro">
+        <div>
+          <p class="eyebrow" id="projectCategory"></p>
+          <h1 id="projectTitle"></h1>
+        </div>
+        <p class="project-intro-text" id="projectDescription"></p>
+      </div>
+
+      <div class="project-media-area">
+        <div class="vertical-carousel" aria-label="Carrossel vertical de fotos e renders">
+          <div class="vertical-carousel-track" id="projectPhotoTrack"></div>
+        </div>
+
+        <aside class="project-side" aria-label="Resumo do projeto">
+          <article class="side-card">
+            <h3>Fotos e renders</h3>
+            <div class="progress-dots" id="projectDots" aria-label="Indicadores da galeria"></div>
+          </article>
+          <article class="side-card">
+            <h3>Desenhos técnicos</h3>
+          </article>
+        </aside>
+      </div>
+
+      <!-- ── MODELO 3D: QUADRO NA PÁGINA DO PROJETO ───────── -->
+      <div class="modelo3d-box" id="modelo3dBox" hidden>
+        <div class="modelo3d-top">
+          <p class="modelo3d-title" id="modelo3dTitle">Modelo 3D</p>
+          <button class="modelo3d-close" type="button" id="closeModelo3d" aria-label="Voltar ao tamanho normal">×</button>
+        </div>
+        <div class="modelo3d-stage" id="modelo3dStage"></div>
+        <button class="modelo3d-ampliar" type="button" id="ampliarModelo3d" aria-label="Ampliar o modelo 3D" title="Ampliar">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-7 7M10 20H4v-6M4 20l7-7"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PAINÉIS LATERAIS: INFOS E DESENHOS ───────────── -->
+  <div class="panel-backdrop" id="panelBackdrop"></div>
+
+  <aside class="info-panel" id="infoPanel" aria-hidden="true">
+    <div class="panel-head">
+      <h2>Infos</h2>
+      <button class="panel-close" type="button" id="closeInfo" aria-label="Fechar informações">×</button>
+    </div>
+    <div class="panel-body">
+      <div class="terrain-list" id="terrainList"></div>
+    </div>
+  </aside>
+
+  <aside class="drawings-panel" id="drawingsPanel" aria-hidden="true">
+    <div class="panel-head">
+      <h2>Desenhos</h2>
+      <button class="panel-close" type="button" id="closeDrawings" aria-label="Fechar desenhos">×</button>
+    </div>
+    <div class="panel-body">
+      <div class="drawings-grid" id="drawingsGrid"></div>
+    </div>
+  </aside>
+
+  <!-- ── VISUALIZAÇÃO AMPLA DAS FOTOS ─────────────────── -->
+  <div class="lightbox" id="photoLightbox" aria-hidden="true">
+    <div class="lightbox-inner">
+      <div class="lightbox-top">
+        <span id="lightboxProjectName"></span>
+        <button class="lightbox-close" type="button" id="closePhotoLightbox" aria-label="Fechar visualização">×</button>
+      </div>
+      <div class="lightbox-stage">
+        <button class="lightbox-arrow prev" type="button" id="prevPhoto" aria-label="Imagem anterior">←</button>
+        <div class="lightbox-media" id="lightboxMedia"></div>
+        <button class="lightbox-arrow next" type="button" id="nextPhoto" aria-label="Próxima imagem">→</button>
+      </div>
+      <div class="lightbox-caption">
+        <span id="lightboxCaption"></span>
+        <span id="lightboxCounter"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VISUALIZAÇÃO AMPLA DOS DESENHOS ──────────────── -->
+  <div class="drawing-full" id="drawingFull" aria-hidden="true">
+    <div class="drawing-full-inner">
+      <p class="drawing-full-title" id="drawingFullTitle"></p>
+      <button class="drawing-full-close" type="button" id="closeDrawingFull" aria-label="Fechar desenho">×</button>
+      <div class="drawing-full-image" id="drawingFullImage"></div>
+    </div>
+  </div>
+
+  <footer>
+    <span>© <span id="year"></span> Carlos A. Boico</span>
+    <span>Arquitetura &amp; Design</span>
+  </footer>
+
+  <!-- ── JAVASCRIPT: CONTEÚDO E FUNCIONAMENTO DO SISTEMA ── -->
+  <script>
+    /*
+      ─────────────────────────────────────────────
+      GUIA RÁPIDO DE EDIÇÃO
+      ─────────────────────────────────────────────
+
+      1. Para trocar capa de projeto:
+         procure const projects e altere:
+         src: 'assets/sua-capa.jpg'
+
+      2. Para trocar fotos da página interna:
+         dentro do projeto, altere o array images:
+         { title: 'Nome da foto', type: 'Foto', src: 'assets/foto.jpg' }
+
+      3. Para trocar plantas/desenhos:
+         dentro do projeto, altere o array drawings:
+         { title: 'Planta baixa', src: 'assets/planta.jpg' }
+
+      4. Para criar novo projeto:
+         copie um bloco inteiro dentro de const projects,
+         altere id, title, meta, category, src, info, images e drawings.
+
+      5. Para alterar textos das abas superiores:
+         edite const systemPages.
+
+      6. Para mostrar o Modelo 3D em um projeto:
+         dentro do projeto, adicione as linhas:
+         modelo3d: 'viewer3d-vitalina.html',
+         modelo3dPosicao: 'lado',   (ou 'abaixo', ou 'acima')
+         As cenas, os cômodos e as hachuras ficam no bloco CONFIG desse arquivo.
+
+      7. Para descrever uma imagem (é o que o Google e os leitores de tela leem):
+         dentro da imagem, acrescente a linha alt:
+         { title: 'Nome da foto', type: 'Foto', src: 'assets/foto.jpg',
+           alt: 'Uma frase dizendo o que aparece na imagem' }
+         Sem o alt, o site usa o título da imagem e o nome do projeto.
+
+      8. Nome, resumo, perfis e contato que o Google lê:
+         edite const identidade.
+         O título e a descrição que aparecem no Google ficam no começo do
+         arquivo (<title> e <meta name="description">).
+
+      9. Versão em texto do portfólio (bloco "VERSÃO EM TEXTO", no começo do BODY):
+         é uma cópia dos textos de const identidade, const systemPages e const projects.
+         Depois de mudar um texto aqui no script, atualize a cópia de lá
+         (o passo a passo está no comentário do próprio bloco e no README_EDICAO.md).
+    */
+
+    // ── 01. IMAGENS PRINCIPAIS DO SISTEMA ─────────────────
+    // As imagens ficam na pasta assets/. Mantenha os arquivos com estes nomes.
+    const project01CoverPhoto  = 'assets/vitalina-projeto-final.jpg';
+    const project01PhotoLeft   = 'assets/vitalina-1o-render-cliente.jpg';
+    const project01PhotoCenter = 'assets/vitalina-render-conceito.jpg';
+    const project01PhotoRight  = 'assets/vitalina-render-conceito-angular.jpg';
+    const project01PlantaBaixa = 'assets/vitalina-planta-baixa.jpg';
+    // Cor de fundo da prancha. Usada para preencher as sobras quando o
+    // desenho aparece inteiro (sem corte). Troque se mudar a cor da prancha.
+    const project01PlantaFundo = '#B96F54';
+
+    // ── 02. PROJETOS DO HALL E PÁGINAS INTERNAS ───────────
+    // Cada bloco abaixo representa 1 projeto.
+    // Edite aqui para alterar capa, nome, categoria, fotos, infos e desenhos.
+    const projects = [
+      // PROJETO 01 — edite este bloco para alterar o Salão Vitalina de Beleza.
+      {
+        // O id vira o endereco na barra do navegador (#salao-vitalina-de-beleza).
+        // Use so letras minusculas, sem acento, com hifen no lugar do espaco.
+        id: 'salao-vitalina-de-beleza',
+        title: 'Salão Vitalina de Beleza',
+        // APELIDO: endereço curto do projeto (#vitalina). O endereço comprido,
+        // gerado do título (#salao-vitalina-de-beleza), continua funcionando.
+        apelido: 'vitalina',
+        meta: 'Interiores',
+        category: 'Salão de beleza',
+        coverClass: 'art-1',
+        src: project01CoverPhoto,
+        // MODELO 3D: a linha "modelo3d" mostra o quadro com o modelo na página do projeto.
+        // Para tirar o quadro, apague as duas linhas. Para usar em outro projeto,
+        // mova as duas linhas para o bloco dele.
+        // modelo3dPosicao: 'lado'   = quadro fixo no canto esquerdo, carrossel ao lado
+        //                  'abaixo' = quadro abaixo do carrossel de fotos
+        //                  'acima'  = quadro acima do carrossel de fotos
+        // (em tela estreita e no celular, 'lado' vira 'abaixo')
+        modelo3d: 'viewer3d-vitalina.html',
+        modelo3dPosicao: 'lado',
+        description: 'Projeto de interiores para salão de beleza em 27,94 m², a ser implantado em Lisboa, Portugal. A cliente reside na França e pediu que essa vivência fosse traduzida no ambiente: a composição parte da boiserie nas paredes, presente em todo o projeto, somada a marcenaria clara, metais dourados e estofados em couro. A vegetação — com destaque para a kentia forsteriana — completa o repertório e suaviza o ambiente compacto.',
+        info: {
+          'Área': '27,94 m²',
+          'Localização': 'Lisboa — Portugal',
+          'Tipologia': 'Salão de beleza',
+          'Referência': 'Repertório francês, trazido pela cliente',
+          'Etapa': 'Experiência de projeto em estágio — Campo Grande/MS, 2026',
+          'Autoria': 'Projeto autoral com auxílio',
+          'Programas': 'SketchUp, Enscape e Adobe Illustrator'
+        },
+        // "alt" descreve a imagem em uma frase: é o que o Google e os leitores de tela leem.
+        images: [
+          { title: 'Projeto final', type: 'Render', src: project01CoverPhoto,
+            alt: 'Render final do Salão Vitalina de Beleza: balcão branco, poltronas caramelo, lavatórios pretos diante de jardim vertical e espelhos com boiserie' },
+          { title: '1º Render para cliente', type: 'Render', src: project01PhotoLeft,
+            alt: 'Primeiro render do Salão Vitalina apresentado à cliente: balcão branco, poltronas claras, lavatórios pretos e parede terracota com arcos dourados' },
+          { title: 'Render Conceito', type: 'Render', src: project01PhotoCenter,
+            alt: 'Render conceito do Salão Vitalina: boiserie branca, lustre dourado, poltronas claras, balcão ripado e lavatórios pretos diante de painéis rosados' },
+          { title: 'Render Conceito (Angular)', type: 'Render', src: project01PhotoRight,
+            alt: 'Render conceito do Salão Vitalina em ângulo aberto: janela ampla, parede terracota com arcos dourados, lustre e cadeiras pretas com estrutura dourada' },
+          { title: 'Planta baixa', type: 'Desenho', src: project01PlantaBaixa, fit: 'contain', bg: project01PlantaFundo,
+            alt: 'Planta baixa do Salão Vitalina de Beleza, com 27,94 m²: banheiros, lavabo, lavatórios, bancadas de corte, espera e recepção' }
+        ],
+        drawings: [
+          { title: 'Planta baixa', src: project01PlantaBaixa, bg: project01PlantaFundo }
+        ]
+      },
+      // PROJETO 02 — Reforma Unifamiliar (em andamento)
+      // andamento: true coloca a fita vermelha "EM ANDAMENTO" na capa.
+      // Quando o projeto terminar, apague essa linha e troque a capa.
+      {
+        id: 'reforma-unifamiliar',
+        title: 'Reforma Unifamiliar',
+        apelido: 'reforma',
+        meta: 'Arquitetura · Em andamento',
+        category: 'Reforma residencial',
+        coverClass: 'art-6',
+        andamento: true,
+        src: 'assets/capa-reforma-unifamiliar.svg',
+        // MODELO 3D — já preparado no arquivo viewer3d-reforma.html (Fachada, Planta e Implantação),
+        // mas DESLIGADO enquanto o projeto está em andamento e o modelo não chegou.
+        // Para ligar: suba assets/reforma-modelo.glb e apague as duas barras (//) das duas linhas abaixo.
+        // modelo3d: 'viewer3d-reforma.html',
+        // modelo3dPosicao: 'lado',
+        description: 'Reforma de residência unifamiliar em Campo Grande/MS para uma família de quatro pessoas e seus pets. O projeto parte da arquitetura dos anos 70, com a cozinha em linguagem modernista e muita textura nos acabamentos. A cliente gosta de Art Déco, e o estilo entrou no projeto em arcos, geometrias e detalhes.',
+        info: {
+          'Área': '150 m²',
+          'Localização': 'Campo Grande — MS',
+          'Tipologia': 'Reforma residencial unifamiliar',
+          'Programa': 'Família de 4 pessoas + pets',
+          'Conceito': 'Arquitetura dos anos 70, cozinha modernista e bastante textura',
+          'Referência': 'Art Déco, trazido pela cliente',
+          'Status': 'Em andamento',
+          'Ano': '2026'
+        },
+        images: [
+          { title: 'Capa ilustrada', type: 'Ilustração', src: 'assets/capa-reforma-unifamiliar.svg', capa: true, bg: '#D6A44E',
+            alt: 'Capa ilustrada do projeto Reforma Unifamiliar: fachada de casa com porta em arco, janela redonda e painel de ripas' }
+        ],
+        drawings: []
+      },
+      // PROJETO 03 — Interiores (em andamento)
+      {
+        id: 'interiores-dopamine',
+        title: 'Interiores Dopamine',
+        apelido: 'dopamine',
+        meta: 'Interiores · Em andamento',
+        category: 'Interiores residencial',
+        coverClass: 'art-2',
+        andamento: true,
+        src: 'assets/capa-interiores.svg',
+        description: 'Projeto de interiores residencial em Campo Grande/MS guiado pelo dopamine color. O projeto usa cores vivas e alegres, em espaços livres de circulação e com a luz natural como protagonista.',
+        info: {
+          'Área': '40 m²',
+          'Localização': 'Campo Grande — MS',
+          'Tipologia': 'Interiores residencial',
+          'Conceito': 'Dopamine color',
+          'Diretrizes': 'Espaços livres e bastante iluminação natural',
+          'Status': 'Em andamento',
+          'Ano': '2026'
+        },
+        images: [
+          { title: 'Capa ilustrada', type: 'Ilustração', src: 'assets/capa-interiores.svg', capa: true, bg: '#F59AB5',
+            alt: 'Capa ilustrada do projeto Interiores Dopamine: sala cor-de-rosa com janela, sofá azul, tapete amarelo e porta verde em arco' }
+        ],
+        drawings: []
+      },
+      // PROJETO 04 — Paisagismo (em andamento)
+      {
+        id: 'paisagismo-residencial',
+        title: 'Paisagismo Residencial',
+        apelido: 'paisagismo',
+        meta: 'Paisagismo · Em andamento',
+        category: 'Área externa',
+        coverClass: 'art-5',
+        andamento: true,
+        src: 'assets/capa-paisagismo.svg',
+        // MODELO 3D — já preparado no arquivo viewer3d-paisagismo.html (Fachada, Planta e Implantação),
+        // mas DESLIGADO enquanto o projeto está em andamento e o modelo não chegou.
+        // Para ligar: suba assets/paisagismo-modelo.glb e apague as duas barras (//) das duas linhas abaixo.
+        // modelo3d: 'viewer3d-paisagismo.html',
+        // modelo3dPosicao: 'lado',
+        description: 'Paisagismo residencial em Campo Grande/MS que mantém parte da vegetação existente no terreno e acrescenta um canteiro e trepadeiras. A ideia é somar ao que o lugar já tem, e não recomeçar do zero.',
+        info: {
+          'Área': '70 m²',
+          'Localização': 'Campo Grande — MS',
+          'Tipologia': 'Paisagismo residencial',
+          'Conceito': 'Preservar a vegetação existente no local',
+          'Intervenções': 'Novo canteiro e trepadeiras',
+          'Status': 'Em andamento',
+          'Ano': '2026'
+        },
+        images: [
+          { title: 'Capa ilustrada', type: 'Ilustração', src: 'assets/capa-paisagismo.svg', capa: true, bg: '#A9C08F',
+            alt: 'Capa ilustrada do projeto Paisagismo Residencial: árvore existente, canteiro com flores e treliça com trepadeira' }
+        ],
+        drawings: []
+      },
+      // PROJETO 05 — Móveis planejados (em andamento)
+      {
+        id: 'moveis-planejados-studio-3d',
+        title: 'Móveis Planejados',
+        apelido: 'moveis',
+        meta: 'Mobiliário · Em andamento',
+        category: 'Studio criativo 3D',
+        coverClass: 'art-8',
+        andamento: true,
+        src: 'assets/capa-moveis-planejados.svg',
+        description: 'Construção de móveis planejados para um studio criativo 3D, com marcenaria pensada para a rotina de produção e exposição das peças.',
+        info: {
+          'Tipologia': 'Móveis planejados',
+          'Cliente': 'Studio criativo 3D',
+          'Escopo': 'Projeto e construção do mobiliário',
+          'Status': 'Em andamento',
+          'Ano': '2026'
+        },
+        images: [
+          { title: 'Capa ilustrada', type: 'Ilustração', src: 'assets/capa-moveis-planejados.svg', capa: true, bg: '#3D4F9E',
+            alt: 'Capa ilustrada do projeto Móveis Planejados: estante de nichos com gaveteiro e bancada com impressora 3D' }
+        ],
+        drawings: []
+      }
+    ];
+
+
+    // ── 03. PÁGINAS DO TOPO: SOBRE MIM / PROJETOS / CONTATO ─
+    // ── ENDEREÇO DE CADA PROJETO (o que aparece depois do # no navegador) ──
+    // O endereço comprido é gerado a partir do title: "Salão Vitalina de Beleza"
+    // vira "#salao-vitalina-de-beleza". Renomeou o projeto, o endereço acompanha.
+    function gerarId(texto) {
+      return String(texto)
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+    // APELIDO: com a linha "apelido" no projeto, o endereço fica curto (#vitalina).
+    // Sem ela, vale o endereço gerado do título. O endereço comprido sempre continua abrindo o projeto.
+    const enderecosReservados = ['inicio', 'sobre', 'projetos', 'contato', 'processo'];
+    projects.forEach((projeto) => { projeto.idLongo = gerarId(projeto.title); projeto.id = projeto.idLongo; });
+    projects.forEach((projeto) => {
+      const curto = projeto.apelido ? gerarId(projeto.apelido) : '';
+      if (!curto) return;
+      const ocupado = enderecosReservados.includes(curto) ||
+        projects.some((outro) => outro !== projeto && (outro.id === curto || outro.idLongo === curto));
+      if (ocupado) {
+        console.warn('[portfólio] O apelido "' + projeto.apelido + '" já está em uso. O projeto "' + projeto.title + '" ficou com o endereço comprido.');
+        return;
+      }
+      projeto.id = curto;
+    });
+    // Acha o projeto pelo que está depois do # (aceita o apelido e o endereço comprido).
+    function acharProjeto(endereco) {
+      let chave = String(endereco || '');
+      try { chave = decodeURIComponent(chave); } catch (erro) { /* fica como veio */ }
+      chave = gerarId(chave);
+      if (!chave) return null;
+      return projects.find((projeto) => projeto.id === chave) || projects.find((projeto) => projeto.idLongo === chave) || null;
+    }
+
+    const systemPages = {
+      sobre: {
+        label: '',
+        title: 'Sobre mim',
+        copy: [
+          'Tenho 22 anos e curso Arquitetura e Urbanismo, mas minha formação começa muito antes do curso — sou ilustrador profissional há mais de 12 anos, com passagem pelo design gráfico, comunicação visual e detalhamento técnico de projetos. Esse percurso não é periférico: é o que define meu olhar sobre o projeto.',
+          'Entendo arquitetura como linguagem. O traço não é apenas representação — é argumento. A linha carrega tanto rigor construtivo quanto intenção estética, e foi ilustrando que aprendi isso antes de qualquer teoria.',
+          'Minha produção se alinha a referências que transitam entre o vernacular e o erudito: a poética brutalista dos anos 70–80, a gramática gráfica do pen-plot, a lógica do paisagismo funcional como sistema, e a arte gráfica de autores que compreendem o espaço como elemento narrativo. Estou montando minha carga intelectual de curso com a mesma atenção que dedico a uma prancha — camada por camada, com rigor e intenção.'
+        ],
+        cards: []
+      },
+      projetos: {
+        label: 'Projetos',
+        title: 'Projetos',
+        copy: [
+          'Lista geral dos projetos cadastrados no sistema.',
+          'As capas abaixo são as mesmas usadas no carrossel do hall de entrada.'
+        ],
+        cards: []
+      },
+      contato: {
+        label: 'Contato',
+        title: 'Contato',
+        copy: [],
+        cards: [],
+        action: true
+      }
+    };
+
+    // ── 03B. IDENTIDADE DO SITE ───────────────────────────
+    // Quem é você, em poucas palavras. Entra na versão em texto do portfólio,
+    // nos dados que o Google lê e nos botões da aba Contato.
+    // O título e a descrição que aparecem no resultado do Google ficam no começo
+    // do arquivo (<title> e <meta name="description">): se mudar aqui, repita lá.
+    const identidade = {
+      nome: 'Carlos A. Boico',
+      titulo: 'Carlos A. Boico — Portfólio de Arquitetura e Urbanismo',
+      resumo: 'Estudante de Arquitetura e Urbanismo e ilustrador em Campo Grande/MS.',
+      cidade: 'Campo Grande',
+      estado: 'MS',
+      areas: ['Arquitetura e Urbanismo', 'Design de interiores', 'Paisagismo', 'Mobiliário', 'Ilustração'],
+      // Links dos seus perfis (Instagram, LinkedIn, Behance...), cada um entre aspas, separados por vírgula.
+      // O do Instagram também vira botão na aba Contato.
+      // Exemplo: perfis: ['https://www.instagram.com/seu_perfil', 'https://www.linkedin.com/in/seu-perfil'],
+      perfis: ['https://www.instagram.com/boicostar_/'],
+      whatsapp: 'https://wa.me/message/DAOAAENEEHYBA1',
+      email: 'carlos.arquitetocg@hotmail.com'
+    };
+    // Instagram: o primeiro link de "perfis" que for do Instagram vira botão na aba Contato.
+    const perfilInstagram = (identidade.perfis || []).find((link) => /instagram\.com/i.test(link)) || '';
+    const arrobaInstagram = perfilInstagram ? '@' + perfilInstagram.split(/[?#]/)[0].replace(/\/+$/, '').split('/').pop() : '';
+
+    // ── 04. ELEMENTOS DO HTML QUE O JAVASCRIPT CONTROLA ───
+    const menuButton = document.querySelector('.menu-button');
+    const closeButton = document.querySelector('.close-menu');
+    const menuPanel = document.querySelector('.menu-panel');
+    const pageNavLinks = document.querySelectorAll('[data-system-page]');
+    const homeView = document.querySelector('.home-view');
+    const projectPage = document.getElementById('projectPage');
+    const homeHeader = document.querySelector('.home-header');
+    const systemPage = document.getElementById('systemPage');
+    const systemLabel = document.getElementById('systemLabel');
+    const systemTitle = document.getElementById('systemTitle');
+    const systemBody = document.getElementById('systemBody');
+
+    const projectTrack = document.getElementById('projectTrack');
+    const prevProject = document.getElementById('prevProject');
+    const nextProject = document.getElementById('nextProject');
+
+    const projectName = document.getElementById('projectName');
+    const projectTitle = document.getElementById('projectTitle');
+    const projectCategory = document.getElementById('projectCategory');
+    const projectDescription = document.getElementById('projectDescription');
+    const projectPhotoTrack = document.getElementById('projectPhotoTrack');
+    const projectDots = document.getElementById('projectDots');
+    const terrainList = document.getElementById('terrainList');
+    const drawingsGrid = document.getElementById('drawingsGrid');
+
+    const panelBackdrop = document.getElementById('panelBackdrop');
+    const infoButton = document.getElementById('infoButton');
+    const drawingsButton = document.getElementById('drawingsButton');
+    const closeProjectPage = document.getElementById('closeProjectPage');
+    const infoPanel = document.getElementById('infoPanel');
+    const drawingsPanel = document.getElementById('drawingsPanel');
+    const closeInfo = document.getElementById('closeInfo');
+    const closeDrawings = document.getElementById('closeDrawings');
+
+    const photoLightbox = document.getElementById('photoLightbox');
+    const lightboxMedia = document.getElementById('lightboxMedia');
+    const lightboxProjectName = document.getElementById('lightboxProjectName');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+    const lightboxCounter = document.getElementById('lightboxCounter');
+    const closePhotoLightbox = document.getElementById('closePhotoLightbox');
+    const prevPhoto = document.getElementById('prevPhoto');
+    const nextPhoto = document.getElementById('nextPhoto');
+
+    const drawingFull = document.getElementById('drawingFull');
+    const drawingFullTitle = document.getElementById('drawingFullTitle');
+    const drawingFullImage = document.getElementById('drawingFullImage');
+    const closeDrawingFull = document.getElementById('closeDrawingFull');
+
+    const modelo3dBox = document.getElementById('modelo3dBox');
+    const modelo3dStage = document.getElementById('modelo3dStage');
+    const modelo3dTitle = document.getElementById('modelo3dTitle');
+    const ampliarModelo3dButton = document.getElementById('ampliarModelo3d');
+    const closeModelo3dButton = document.getElementById('closeModelo3d');
+    const projectStage = projectPage.querySelector('.project-stage');
+    const projectMediaArea = projectPage.querySelector('.project-media-area');
+
+    // ── 05. ESTADO ATUAL DO SISTEMA ───────────────────────
+    let currentProject = projects[0];
+    let currentPhotoIndex = 0;
+    /* autoTimer removido — o carrossel de projeto usa requestAnimationFrame, não setInterval */
+    let projectAutoRestartTimer = null;
+    let autoScrollFrame = null;
+    let projectAutoPaused = false;
+    let projectAutoX = 0;
+    let projectAutoLastTs = 0;
+    const projectAutoSpeed = 85; // px por segundo
+    let hallAutoTimer = null;
+    let hallWheelTimer = null;
+    let projectWheelTimer = null; // timer separado para o wheel do carrossel interno
+    let isDraggingHall = false;
+    let dragStartX = 0;
+    let initialScrollLeft = 0;
+    let pendingHallCard = null;
+    let hallPointerMoved = false;
+    let lastHallOpenAt = 0;
+
+    // ── 06. MENU E NAVEGAÇÃO GERAL ────────────────────────
+    function openMenu() {
+      menuPanel.classList.add('is-open');
+      menuPanel.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('menu-open');
+    }
+
+    function closeMenu() {
+      menuPanel.classList.remove('is-open');
+      menuPanel.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('menu-open');
+    }
+
+    function mediaStyle(item) {
+      if (item.src) {
+        return '--art: url("' + item.src + '") center / cover no-repeat; background-image: url("' + item.src + '"); background-size: cover; background-position: center;';
+      }
+      return '';
+    }
+
+    // Fita vermelha "EM ANDAMENTO" (estilo fita de isolamento) para projetos com andamento: true.
+    function fitaAndamento(project) {
+      if (!project || !project.andamento) return '';
+      const texto = 'EM ANDAMENTO ✕ EM ANDAMENTO ✕ EM ANDAMENTO ✕ EM ANDAMENTO ✕ EM ANDAMENTO ✕ EM ANDAMENTO ✕ EM ANDAMENTO ✕ EM ANDAMENTO';
+      return ['f1', 'f2', 'f3'].map((n) =>
+        `<span class="fita-andamento ${n}" aria-hidden="true"><span>${texto}</span></span>`
+      ).join('');
+    }
+
+    function mediaClass(item) {
+      return item.className || item.coverClass || 'art-1';
+    }
+
+    // ── 07. HALL / CARROSSEL PRINCIPAL ────────────────────
+    function renderHallCarousel() {
+      const hallProjects = [...projects, ...projects];
+      projectTrack.innerHTML = hallProjects.map((project, index) => `
+        <button class="project-card" type="button" data-project="${project.id}" aria-label="Abrir ${project.title}">
+          <div class="capa-wrap">
+          <div class="project-image ${mediaClass(project)} ${project.src ? 'has-real-image' : ''}" role="img" aria-label="Capa de ${project.title}" style="${project.src ? '' : mediaStyle(project)}">
+            ${project.src ? `<img class="project-cover-img" src="${project.src}" alt="${index < projects.length ? escTexto(altCapa(project)) : ''}" loading="eager" decoding="async">` : ''}
+          </div>
+          ${fitaAndamento(project)}
+          </div>
+          <p class="project-title">${project.title}</p>
+          <p class="project-meta">${project.meta}</p>
+        </button>
+      `).join('');
+
+      projectTrack.querySelectorAll('.project-card').forEach((card) => {
+        card.dataset.wasDragged = 'false';
+      });
+    }
+
+    function openHallProjectCard(card) {
+      if (!card || card.dataset.wasDragged === 'true') return;
+      const projectId = card.dataset.project;
+      if (!projectId) return;
+
+      const now = Date.now();
+      if (now - lastHallOpenAt < 350) return;
+      lastHallOpenAt = now;
+
+      stopHallAutoCarousel();
+      openProject(projectId);
+    }
+
+    function moveHallCarousel(direction) {
+      const card = projectTrack.querySelector('.project-card');
+      if (!card) return;
+      const gap = parseFloat(getComputedStyle(projectTrack).columnGap || getComputedStyle(projectTrack).gap) || 30;
+      const amount = card.getBoundingClientRect().width + gap;
+      projectTrack.scrollBy({ left: direction * amount, behavior: 'smooth' });
+    }
+
+    function nextHallSlide() {
+      const maxScroll = projectTrack.scrollWidth - projectTrack.clientWidth;
+      if (maxScroll <= 0) return;
+
+      const loopPoint = projectTrack.scrollWidth / 2;
+      projectTrack.scrollLeft += 1.1;
+
+      if (projectTrack.scrollLeft >= loopPoint) {
+        projectTrack.scrollLeft = 0;
+      }
+    }
+
+    function startHallAutoCarousel() {
+      stopHallAutoCarousel();
+      projectTrack.classList.add('is-auto-scrolling');
+      hallAutoTimer = window.setInterval(nextHallSlide, 16);
+    }
+
+    function stopHallAutoCarousel() {
+      projectTrack.classList.remove('is-auto-scrolling');
+      if (hallAutoTimer) {
+        window.clearInterval(hallAutoTimer);
+        window.clearTimeout(hallAutoTimer); // cobre o caso de setTimeout armazenado por restartHallAutoCarousel
+      }
+      hallAutoTimer = null;
+    }
+
+    function restartHallAutoCarousel() {
+      stopHallAutoCarousel();
+      hallAutoTimer = window.setTimeout(() => {
+        projectTrack.classList.add('is-auto-scrolling');
+        startHallAutoCarousel();
+      }, 900);
+    }
+
+    function setupHallDrag() {
+      projectTrack.addEventListener('pointerdown', (event) => {
+        stopHallAutoCarousel();
+        isDraggingHall = true;
+        hallPointerMoved = false;
+        pendingHallCard = event.target.closest('.project-card');
+        projectTrack.classList.add('is-dragging');
+        dragStartX = event.clientX;
+        initialScrollLeft = projectTrack.scrollLeft;
+        projectTrack.querySelectorAll('.project-card').forEach(card => card.dataset.wasDragged = 'false');
+        projectTrack.setPointerCapture(event.pointerId);
+      });
+
+      projectTrack.addEventListener('pointermove', (event) => {
+        if (!isDraggingHall) return;
+        const walk = (event.clientX - dragStartX) * 1.25;
+        if (Math.abs(walk) > 5) {
+          hallPointerMoved = true;
+          projectTrack.querySelectorAll('.project-card').forEach(card => card.dataset.wasDragged = 'true');
+        }
+        projectTrack.scrollLeft = initialScrollLeft - walk;
+      });
+
+      function stopDrag(event) {
+        if (!isDraggingHall) return;
+        const shouldOpenCard = event && event.type === 'pointerup' && pendingHallCard && !hallPointerMoved;
+        const cardToOpen = pendingHallCard;
+
+        isDraggingHall = false;
+        pendingHallCard = null;
+        projectTrack.classList.remove('is-dragging');
+        window.setTimeout(() => {
+          projectTrack.querySelectorAll('.project-card').forEach(card => card.dataset.wasDragged = 'false');
+        }, 80);
+
+        if (shouldOpenCard) {
+          openHallProjectCard(cardToOpen);
+          return;
+        }
+
+        restartHallAutoCarousel();
+      }
+
+      projectTrack.addEventListener('pointerup', stopDrag);
+      projectTrack.addEventListener('pointercancel', stopDrag);
+      projectTrack.addEventListener('pointerleave', stopDrag);
+
+      projectTrack.addEventListener('wheel', (event) => {
+        stopHallAutoCarousel();
+        if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+          event.preventDefault();
+          projectTrack.scrollLeft += event.deltaY;
+        }
+        window.clearTimeout(hallWheelTimer);
+        hallWheelTimer = window.setTimeout(restartHallAutoCarousel, 900);
+      }, { passive: false });
+
+      // O carrossel continua girando quando o mouse está sobre ele;
+      // ele pausa apenas durante arraste ou rolagem manual.
+    }
+
+
+    // ── 08. PÁGINAS INTERNAS DO MENU ──────────────────────
+    function getCoverClass(project) {
+      return project.src ? 'project-index-cover has-real-image' : 'project-index-cover ' + mediaClass(project);
+    }
+
+    function getCoverImage(project) {
+      return project.src ? `<img src="${project.src}" alt="Capa de ${project.title}" loading="eager" decoding="async">` : '';
+    }
+
+    function renderProjectsIndex() {
+      const firstProject = projects[0];
+      const rowsHtml = projects.map((project) => `
+        <button class="project-index-row" type="button" data-project="${project.id}" data-cover-class="${getCoverClass(project)}" data-cover-src="${project.src || ''}" data-cover-title="${project.title}" data-andamento="${project.andamento ? '1' : ''}">
+          <strong>${project.title}</strong>
+          <span>${project.info?.Local || project.category || project.meta}</span>
+          <em>${project.meta}</em>
+        </button>
+      `).join('');
+
+      systemBody.innerHTML = `
+        <div class="project-index">
+          <div class="${getCoverClass(firstProject)}${firstProject.andamento ? ' is-andamento' : ''}" id="projectIndexCover">
+            ${getCoverImage(firstProject)}
+            ${fitaAndamento(firstProject)}
+            <span class="project-index-cover-caption">${firstProject.title}</span>
+          </div>
+          <div class="project-index-list">${rowsHtml}</div>
+        </div>
+      `;
+
+      const cover = document.getElementById('projectIndexCover');
+
+      function updateCoverFromRow(row) {
+        if (!cover || !row) return;
+        cover.className = row.dataset.coverClass + (row.dataset.andamento ? ' is-andamento' : '');
+        const src = row.dataset.coverSrc;
+        cover.innerHTML = `${src ? `<img src="${src}" alt="Capa de ${row.dataset.coverTitle}" loading="eager" decoding="async">` : ''}${row.dataset.andamento ? fitaAndamento({ andamento: true }) : ''}<span class="project-index-cover-caption">${row.dataset.coverTitle}</span>`;
+      }
+
+      systemBody.querySelectorAll('.project-index-row').forEach((row) => {
+        row.addEventListener('mouseenter', () => updateCoverFromRow(row));
+        row.addEventListener('focus', () => updateCoverFromRow(row));
+        row.addEventListener('click', () => openProject(row.dataset.project));
+      });
+    }
+
+    function renderSystemPage(pageId) {
+      const page = systemPages[pageId] || systemPages.sobre;
+      systemPage.dataset.page = pageId;
+      systemLabel.textContent = page.label;
+      systemLabel.style.display = page.label ? '' : 'none';
+      systemTitle.textContent = page.title;
+      systemTitle.style.display = '';
+
+      if (pageId === 'projetos') {
+        renderProjectsIndex();
+        return;
+      }
+
+      if (pageId === 'sobre') {
+        systemTitle.style.display = 'none';
+        const copyHtml = page.copy.map(text => `<p>${text}</p>`).join('');
+        const photoSrc = 'assets/foto-sobre.jpg';
+        systemBody.innerHTML = `
+          <div class="sobre-layout">
+            <svg class="sobre-deco" viewBox="0 0 1000 600" preserveAspectRatio="xMaxYMid meet" aria-hidden="true">
+              <!-- Espiral áurea (φ = 1,618) -->
+              <path d="M 603.5,310.0 L 603.6,309.8 L 603.6,309.5 L 603.6,309.2 L 603.7,309.0 L 603.7,308.7 L 603.6,308.4 L 603.6,308.1 L 603.5,307.9 L 603.5,307.6 L 603.4,307.3 L 603.2,307.0 L 603.1,306.7 L 602.9,306.4 L 602.7,306.2 L 602.5,305.9 L 602.3,305.7 L 602.0,305.4 L 601.7,305.2 L 601.4,305.0 L 601.1,304.8 L 600.8,304.6 L 600.4,304.5 L 600.0,304.3 L 599.6,304.2 L 599.2,304.2 L 598.8,304.1 L 598.4,304.1 L 597.9,304.1 L 597.5,304.1 L 597.0,304.2 L 596.6,304.3 L 596.1,304.4 L 595.6,304.6 L 595.2,304.8 L 594.7,305.0 L 594.3,305.3 L 593.9,305.6 L 593.4,305.9 L 593.0,306.3 L 592.6,306.7 L 592.3,307.2 L 591.9,307.7 L 591.6,308.2 L 591.3,308.7 L 591.1,309.3 L 590.9,309.9 L 590.7,310.5 L 590.6,311.2 L 590.5,311.9 L 590.4,312.6 L 590.4,313.3 L 590.5,314.0 L 590.6,314.7 L 590.7,315.5 L 590.9,316.2 L 591.2,317.0 L 591.5,317.7 L 591.9,318.5 L 592.3,319.2 L 592.8,319.9 L 593.4,320.6 L 594.0,321.2 L 594.6,321.9 L 595.4,322.5 L 596.1,323.0 L 597.0,323.5 L 597.9,324.0 L 598.8,324.4 L 599.8,324.8 L 600.8,325.0 L 601.8,325.3 L 602.9,325.4 L 604.1,325.5 L 605.2,325.5 L 606.4,325.4 L 607.6,325.3 L 608.8,325.1 L 610.0,324.7 L 611.2,324.3 L 612.4,323.8 L 613.6,323.2 L 614.8,322.5 L 615.9,321.7 L 617.0,320.8 L 618.1,319.8 L 619.1,318.8 L 620.1,317.6 L 621.0,316.3 L 621.8,315.0 L 622.6,313.6 L 623.3,312.1 L 623.8,310.5 L 624.3,308.9 L 624.7,307.1 L 624.9,305.4 L 625.1,303.6 L 625.1,301.7 L 625.0,299.8 L 624.8,297.9 L 624.4,295.9 L 623.9,294.0 L 623.2,292.0 L 622.4,290.1 L 621.4,288.1 L 620.3,286.2 L 619.0,284.4 L 617.6,282.6 L 616.0,280.8 L 614.3,279.2 L 612.4,277.6 L 610.4,276.1 L 608.3,274.8 L 606.0,273.6 L 603.5,272.5 L 601.0,271.5 L 598.4,270.7 L 595.6,270.1 L 592.7,269.7 L 589.8,269.4 L 586.8,269.4 L 583.7,269.5 L 580.6,269.9 L 577.5,270.5 L 574.3,271.3 L 571.1,272.4 L 568.0,273.7 L 564.8,275.2 L 561.8,277.0 L 558.8,279.0 L 555.8,281.3 L 553.0,283.9 L 550.3,286.6 L 547.8,289.6 L 545.4,292.9 L 543.2,296.4 L 541.2,300.1 L 539.4,303.9 L 537.8,308.0 L 536.5,312.3 L 535.5,316.8 L 534.8,321.4 L 534.3,326.1 L 534.2,331.0 L 534.5,336.0 L 535.0,341.0 L 536.0,346.1 L 537.3,351.2 L 539.0,356.3 L 541.0,361.4 L 543.5,366.5 L 546.4,371.5 L 549.6,376.3 L 553.3,381.1 L 557.4,385.7 L 561.8,390.0 L 566.7,394.2 L 571.9,398.1 L 577.5,401.7 L 583.4,404.9 L 589.7,407.9 L 596.3,410.4 L 603.2,412.6 L 610.4,414.2 L 617.8,415.5 L 625.5,416.2 L 633.4,416.4 L 641.4,416.1 L 649.5,415.2 L 657.7,413.7 L 666.0,411.7 L 674.3,409.0 L 682.6,405.7 L 690.8,401.7 L 698.8,397.1 L 706.7,391.9 L 714.4,386.0 L 721.9,379.5 L 729.0,372.3 L 735.7,364.6 L 742.0,356.1 L 747.9,347.1 L 753.2,337.6 L 758.0,327.4 L 762.2,316.8 L 765.7,305.7 L 768.5,294.1 L 770.5,282.1 L 771.8,269.7 L 772.2,257.0 L 771.7,244.1 L 770.4,230.9 L 768.1,217.6 L 764.8,204.2 L 760.5,190.8 L 755.3,177.4 L 749.0,164.1 L 741.6,151.1 L 733.2,138.3 L 723.8,125.8 L 713.3,113.7 L 701.8,102.2 L 689.3,91.2 L 675.7,81.0 L 661.3,71.4 L 645.8,62.7 L 629.5,54.9 L 612.4,48.1 L 594.4,42.3 L 575.7,37.7 L 556.3,34.3 L 536.4,32.2 L 515.9,31.4 L 495.0,32.0 L 473.7,34.1 L 452.2,37.7 L 430.5,42.9 L 408.8,49.7 L 387.1,58.1 L 365.6,68.1 L 344.4,79.9 L 323.7,93.3 L 303.5,108.5 L 283.9,125.3 L 265.2,143.8 L 247.4,163.9 L 230.6,185.7 L 215.1,209.0 L 200.9,233.9 L 188.1,260.2 L 177.0,287.8 L 167.5,316.8 L 159.9,347.0 L 154.2,378.2 L 150.6,410.4 L 149.2,443.5 L 150.0,477.3 L 153.2,511.7 L 158.9,546.5 L 167.1,581.6 L 177.8,616.7"
+                    fill="none" stroke="#6d28d9" stroke-width="1.8" opacity="0.18"/>
+              <!-- Retângulos de ouro aninhados -->
+              <rect x="149" y="31" width="623" height="586" fill="none" stroke="#6d28d9" stroke-width="1.1" opacity="0.13"/>
+              <!-- Cotas arquitetônicas -->
+              <g opacity="0.28" stroke="#E8442A" stroke-width="1" fill="none">
+                <line x1="52" y1="555" x2="670" y2="555"/>
+                <line x1="52" y1="548" x2="52"  y2="562"/>
+                <line x1="670" y1="548" x2="670" y2="562"/>
+                <line x1="52" y1="540" x2="432" y2="540"/>
+                <line x1="52" y1="534" x2="52"  y2="546"/>
+                <line x1="432" y1="534" x2="432" y2="546"/>
+              </g>
+              <!-- φ label -->
+              <text x="682" y="559" font-family="Georgia,serif" font-size="13" fill="#6d28d9" opacity="0.55">φ = 1,618</text>
+              <!-- Ponto de centro da espiral -->
+              <circle cx="600" cy="310" r="3" fill="none" stroke="#6d28d9" stroke-width="1" opacity="0.35"/>
+              <line x1="592" y1="310" x2="608" y2="310" stroke="#6d28d9" stroke-width="0.8" opacity="0.35"/>
+              <line x1="600" y1="302" x2="600" y2="318" stroke="#6d28d9" stroke-width="0.8" opacity="0.35"/>
+              <!-- Marca de registro (canto sup dir) -->
+              <g opacity="0.4" stroke="#E8442A" stroke-width="1.2" fill="none">
+                <circle cx="938" cy="52" r="10"/>
+                <line x1="920" y1="52" x2="930" y2="52"/>
+                <line x1="946" y1="52" x2="956" y2="52"/>
+                <line x1="938" y1="34" x2="938" y2="44"/>
+                <line x1="938" y1="60" x2="938" y2="70"/>
+              </g>
+            </svg>
+            <div class="sobre-top">
+              <h1 class="sobre-heading">Sobre mim</h1>
+              <div class="sobre-foto-wrap">
+                <img src="${photoSrc}" alt="Carlos A. Boico" onerror="this.style.display='none'">
+              </div>
+            </div>
+            <hr class="sobre-divider">
+            <div class="sobre-bio">${copyHtml}</div>
+          </div>
+        `;
+        return;
+      }
+
+      const copyHtml = page.copy.map(text => `<p>${text}</p>`).join('');
+      const cardsHtml = page.cards.map(card => `
+        <article class="system-card">
+          <span>${card.number}</span>
+          <h3>${card.title}</h3>
+          <p>${card.text}</p>
+        </article>
+      `).join('');
+      const actionHtml = page.action ? `
+        <div class="system-actions">
+          <a class="button primary" href="${identidade.whatsapp}" target="_blank" rel="noopener">Solicitar orçamento</a>
+          <a class="button" href="mailto:${identidade.email}">${identidade.email}</a>
+          ${perfilInstagram ? `<a class="button" href="${escTexto(perfilInstagram)}" target="_blank" rel="noopener me">Instagram ${escTexto(arrobaInstagram)}</a>` : ''}
+        </div>
+      ` : '';
+
+      // Botao flutuante do parceiro CHAOS Decor Labs (so na pagina Contato).
+      const chaosHtml = pageId === 'contato' ? `
+        <a class="chaos-float" href="https://www.instagram.com/chaos_decorlabs?igsi=dXEwcnMzbzY1dDF5&utm_source=qr"
+           target="_blank" rel="noopener noreferrer" aria-label="Abrir o Instagram da CHAOS Decor Labs">
+          <span class="chaos-float-logo">
+            <img src="assets/chaos-logo.jpg" alt="CHAOS Decor Labs" loading="lazy" decoding="async">
+          </span>
+          <span class="chaos-float-texto">
+            <strong>CHAOS Decor Labs</strong>
+            <span>@chaos_decorlabs no Instagram</span>
+          </span>
+          <span class="chaos-float-seta" aria-hidden="true">&#8599;</span>
+        </a>
+      ` : '';
+
+      systemBody.innerHTML = `
+        <div class="system-copy">${copyHtml}${actionHtml}</div>
+        <div class="system-cards">${cardsHtml}</div>
+        ${chaosHtml}
+      `;
+    }
+
+    function openSystemPage(pageId, replaceHash = false) {
+      if (pageId === 'processo') pageId = 'projetos';
+      const page = systemPages[pageId] ? pageId : 'sobre';
+      stopHallAutoCarousel();
+      stopAutoCarousel();
+      closeAllPanels();
+      closePhotoViewer();
+      closeDrawingViewer();
+      renderSystemPage(page);
+
+      projectPage.classList.remove('is-active');
+      homeView.classList.add('is-hidden');
+      systemPage.classList.add('is-active');
+      homeHeader.style.removeProperty('display');
+
+      document.body.classList.remove('page-home','page-projetos','page-sobre','page-contato');
+      document.body.classList.add('page-' + page);
+
+      if (replaceHash) {
+        history.replaceState(null, '', '#' + page);
+      } else {
+        history.pushState(null, '', '#' + page);
+      }
+
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    function openProject(projectId, replaceHash = false) {
+      stopHallAutoCarousel();
+      currentProject = acharProjeto(projectId) || projects[0];
+      currentPhotoIndex = 0;
+
+      renderProjectPage();
+      stopAutoCarousel();
+
+      homeView.classList.add('is-hidden');
+      systemPage.classList.remove('is-active');
+      homeHeader.style.setProperty('display', 'none', 'important');
+      projectPage.classList.add('is-active');
+      closeAllPanels();
+      if (!prefersReducedMotion) window.setTimeout(startAutoCarousel, 450);
+
+      if (replaceHash) {
+        history.replaceState(null, '', '#' + currentProject.id);
+      } else {
+        history.pushState(null, '', '#' + currentProject.id);
+      }
+
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    function backHome() {
+      stopAutoCarousel();
+      startHallAutoCarousel();
+      projectPage.classList.remove('is-active');
+      systemPage.classList.remove('is-active');
+      homeView.classList.remove('is-hidden');
+      homeHeader.style.removeProperty('display');
+      closeAllPanels();
+      closePhotoViewer();
+      closeDrawingViewer();
+      document.body.classList.remove('page-home','page-projetos','page-sobre','page-contato');
+      document.body.classList.add('page-home');
+      history.pushState(null, '', '#inicio');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    // ── 09. PÁGINA INTERNA DO PROJETO ─────────────────────
+    function renderProjectPage() {
+      projectName.textContent = currentProject.title;
+      projectTitle.textContent = currentProject.title;
+      projectCategory.textContent = currentProject.category;
+      projectDescription.textContent = currentProject.description;
+
+      const carouselImages = currentProject.images.length > 1
+        ? [...currentProject.images, ...currentProject.images]
+        : currentProject.images;
+
+      projectPhotoTrack.innerHTML = carouselImages.map((image, index) => {
+        const realIndex = index % currentProject.images.length;
+        return `
+          <button class="media-block ${mediaClass(image)} ${image.src ? 'has-real-image' : ''} ${image.fit === 'contain' ? 'is-fit-contain' : ''} ${image.capa ? 'is-capa' : ''}" type="button" data-photo-index="${realIndex}" aria-label="Abrir ${image.title}" style="${image.src ? (image.bg ? 'background:' + image.bg + ';' : '') : mediaStyle(image)}">
+            ${image.src ? `<img class="project-cover-img media-img" src="${image.src}" alt="${index < currentProject.images.length ? escTexto(textoAlt(image, currentProject)) : ''}" loading="eager" decoding="async" style="${image.bg ? 'background:' + image.bg + ';' : ''}">` : ''}
+            ${fitaAndamento(currentProject)}
+            <span class="media-block-label">
+              <strong>${image.title}</strong>
+              <span>${image.type}</span>
+            </span>
+          </button>
+        `;
+      }).join('') + (currentProject.andamento ? `
+        <div class="andamento-card">
+          <span class="andamento-selo">Em andamento</span>
+          <h3>${currentProject.title}</h3>
+          <p>${currentProject.description}</p>
+          <p class="andamento-nota">Renders, fotos e desenhos entram aqui conforme o projeto avança.</p>
+        </div>` : '');
+      projectPhotoTrack.classList.toggle('is-andamento', Boolean(currentProject.andamento));
+
+      // O clique nas fotos é tratado por delegação no final do script.
+      // Isso evita falhas no desktop quando a imagem interna recebe o clique.
+
+      projectDots.innerHTML = currentProject.images.map((_, index) => `
+        <button type="button" data-dot-index="${index}" aria-label="Ir para imagem ${index + 1}"></button>
+      `).join('');
+
+      projectDots.querySelectorAll('button').forEach((dot) => {
+        dot.addEventListener('click', () => {
+          currentPhotoIndex = Number(dot.dataset.dotIndex);
+          updateVerticalCarousel();
+          restartAutoCarousel();
+        });
+      });
+
+      terrainList.innerHTML = Object.entries(currentProject.info).map(([label, value]) => `
+        <div class="terrain-item">
+          <span>${label}</span>
+          <span>${value}</span>
+        </div>
+      `).join('');
+
+      // Sem desenhos, o botao "Desenhos" fica oculto.
+      const hasDrawings = Array.isArray(currentProject.drawings) && currentProject.drawings.length > 0;
+      drawingsButton.style.display = hasDrawings ? '' : 'none';
+      if (!hasDrawings) closeDrawingsPanel();
+
+      // O quadro do Modelo 3D só aparece nos projetos que têm a linha modelo3d.
+      montarModelo3d();
+
+      // O painel mostra os desenhos e, em seguida, as fotos do projeto,
+      // para dar a opcao de escolher qualquer imagem por miniatura.
+      const painelItens = [
+        ...(currentProject.drawings || []).map((d, i) => ({ item: d, tipo: 'desenho', idx: i })),
+        ...(currentProject.images || []).filter((im) => im.src && !(currentProject.drawings || []).some((d) => d.src === im.src))
+            .map((im) => ({ item: im, tipo: 'foto', idx: currentProject.images.indexOf(im) }))
+      ];
+
+      // Imagem com arquivo usa <img> (nunca esticada).
+      drawingsGrid.innerHTML = painelItens.map(({ item, tipo, idx }) => `
+        <button class="drawing-card ${item.src ? 'has-real-image' : mediaClass(item)} ${tipo === 'foto' ? 'is-foto' : ''}" type="button" data-tipo="${tipo}" data-drawing-index="${idx}" aria-label="Abrir ${item.title}" style="${item.src ? (item.bg ? '--fundo:' + item.bg + ';' : '') : mediaStyle(item)}">
+          ${item.src ? `<img class="drawing-img" src="${item.src}" alt="${escTexto(textoAlt(item, currentProject))}" loading="eager" decoding="async">` : ''}
+          <span class="drawing-title">${item.title}</span>
+        </button>
+      `).join('');
+
+      drawingsGrid.querySelectorAll('.drawing-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          const i = Number(card.dataset.drawingIndex);
+          if (card.dataset.tipo === 'foto') {
+            closeDrawingsPanel();
+            openPhotoViewer(i);
+          } else {
+            openDrawingViewer(i);
+          }
+        });
+      });
+
+      currentPhotoIndex = 0;
+      updateVerticalCarousel(true);
+    }
+
+    function updateVerticalCarousel(instant = false) {
+      const mediaItems = projectPhotoTrack.querySelectorAll('.media-block');
+      if (!mediaItems.length) return;
+
+      const activeItem = mediaItems[currentPhotoIndex];
+      if (activeItem) {
+        projectPhotoTrack.classList.remove('is-auto-scrolling');
+        activeItem.scrollIntoView({ behavior: instant ? 'auto' : 'smooth', inline: 'start', block: 'nearest' });
+      }
+
+      projectDots.querySelectorAll('button').forEach((dot, index) => {
+        dot.classList.toggle('is-active', index === currentPhotoIndex);
+      });
+    }
+
+    /* nextVerticalImage removida — não utilizada no fluxo atual */
+
+    function getProjectCarouselStep() {
+      const card = projectPhotoTrack.querySelector('.media-block');
+      if (!card) return 0;
+      const styles = window.getComputedStyle(projectPhotoTrack);
+      const gap = parseFloat(styles.columnGap || styles.gap) || 0;
+      return card.getBoundingClientRect().width + gap;
+    }
+
+    function updateProjectDotsOnly() {
+      projectDots.querySelectorAll('button').forEach((dot, index) => {
+        dot.classList.toggle('is-active', index === currentPhotoIndex);
+      });
+    }
+
+    function syncProjectDotFromScroll() {
+      const step = getProjectCarouselStep();
+      if (!step || currentProject.images.length <= 1) return;
+      const nextIndex = Math.round(projectPhotoTrack.scrollLeft / step) % currentProject.images.length;
+      if (nextIndex !== currentPhotoIndex) {
+        currentPhotoIndex = nextIndex;
+        updateProjectDotsOnly();
+      }
+    }
+
+    function getProjectLoopDistance() {
+      if (currentProject.images.length <= 1) return 0;
+
+      // Como as imagens são duplicadas no HTML ([originais] + [originais]),
+      // o ponto correto do reset é exatamente onde começa a primeira imagem
+      // da segunda sequência. Isso evita o "pulo" e deixa o loop infinito.
+      const items = projectPhotoTrack.querySelectorAll('.media-block');
+      const firstDuplicate = items[currentProject.images.length];
+
+      if (firstDuplicate) {
+        return Math.max(0, firstDuplicate.offsetLeft);
+      }
+
+      return Math.max(0, projectPhotoTrack.scrollWidth / 2);
+    }
+
+    function applyProjectTrackTransform(x) {
+      // Usa !important no inline style porque versões anteriores do layout tinham
+      // transform:none!important no CSS do track. Assim o movimento fica garantido.
+      projectPhotoTrack.style.setProperty('transform', `translate3d(${-x}px, 0, 0)`, 'important');
+    }
+
+    function animateProjectCarousel(timestamp) {
+      if (!projectPhotoTrack.classList.contains('is-auto-scrolling')) {
+        autoScrollFrame = null;
+        return;
+      }
+
+      const loopDistance = getProjectLoopDistance();
+      if (!loopDistance) {
+        autoScrollFrame = window.requestAnimationFrame(animateProjectCarousel);
+        return;
+      }
+
+      if (!projectAutoLastTs) projectAutoLastTs = timestamp;
+      const delta = Math.min(64, timestamp - projectAutoLastTs);
+      projectAutoLastTs = timestamp;
+
+      projectAutoX += (delta / 1000) * projectAutoSpeed;
+      projectAutoX = projectAutoX % loopDistance;
+
+      applyProjectTrackTransform(projectAutoX);
+
+      // Mantém os dots coerentes durante o movimento por transform.
+      const step = getProjectCarouselStep();
+      if (step && currentProject.images.length > 1) {
+        const nextIndex = Math.round(projectAutoX / step) % currentProject.images.length;
+        if (nextIndex !== currentPhotoIndex) {
+          currentPhotoIndex = nextIndex;
+          updateProjectDotsOnly();
+        }
+      }
+
+      autoScrollFrame = window.requestAnimationFrame(animateProjectCarousel);
+    }
+
+    function startAutoCarousel() {
+      stopAutoCarousel();
+      projectAutoPaused = false;
+      if (currentProject.images.length > 1) {
+        projectAutoX = 0;
+        projectAutoLastTs = 0;
+        projectPhotoTrack.scrollLeft = 0;
+        projectPhotoTrack.classList.add('is-auto-scrolling');
+        applyProjectTrackTransform(0);
+        autoScrollFrame = window.requestAnimationFrame(animateProjectCarousel);
+      }
+    }
+
+    function stopAutoCarousel() {
+      if (projectAutoRestartTimer) window.clearTimeout(projectAutoRestartTimer);
+      projectAutoRestartTimer = null;
+      if (autoScrollFrame) window.cancelAnimationFrame(autoScrollFrame);
+      autoScrollFrame = null;
+      projectAutoLastTs = 0;
+      projectPhotoTrack.classList.remove('is-auto-scrolling');
+      projectPhotoTrack.style.removeProperty('transform');
+    }
+
+    function restartAutoCarousel() {
+      stopAutoCarousel();
+      projectAutoRestartTimer = window.setTimeout(() => {
+        projectAutoRestartTimer = null;
+        startAutoCarousel();
+      }, 700);
+    }
+
+    // ── 10. PAINÉIS DE INFOS E DESENHOS ───────────────────
+    function openInfoPanel() {
+      closeDrawingsPanel();
+      infoPanel.classList.add('is-open');
+      infoPanel.setAttribute('aria-hidden', 'false');
+      panelBackdrop.classList.add('is-open');
+      infoButton.classList.add('is-active');
+      document.body.classList.add('panel-open');
+    }
+
+    function closeInfoPanel() {
+      infoPanel.classList.remove('is-open');
+      infoPanel.setAttribute('aria-hidden', 'true');
+      infoButton.classList.remove('is-active');
+      if (!drawingsPanel.classList.contains('is-open')) {
+        panelBackdrop.classList.remove('is-open');
+        document.body.classList.remove('panel-open');
+      }
+    }
+
+    function openDrawingsPanel() {
+      closeInfoPanel();
+      drawingsPanel.classList.add('is-open');
+      drawingsPanel.setAttribute('aria-hidden', 'false');
+      panelBackdrop.classList.add('is-open');
+      drawingsButton.classList.add('is-active');
+      document.body.classList.add('panel-open');
+    }
+
+    function closeDrawingsPanel() {
+      drawingsPanel.classList.remove('is-open');
+      drawingsPanel.setAttribute('aria-hidden', 'true');
+      drawingsButton.classList.remove('is-active');
+      if (!infoPanel.classList.contains('is-open')) {
+        panelBackdrop.classList.remove('is-open');
+        document.body.classList.remove('panel-open');
+      }
+    }
+
+    function closeAllPanels() {
+      closeInfoPanel();
+      closeDrawingsPanel();
+    }
+
+    // ── 11. VISUALIZAÇÃO AMPLA DAS FOTOS ──────────────────
+    function openPhotoViewer(index) {
+      currentPhotoIndex = Number(index) || 0;
+      updatePhotoViewer();
+      photoLightbox.classList.add('is-open');
+      photoLightbox.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+      stopAutoCarousel();
+    }
+
+    function closePhotoViewer() {
+      photoLightbox.classList.remove('is-open');
+      photoLightbox.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      lightboxMedia.innerHTML = '';
+      if (projectPage.classList.contains('is-active')) restartAutoCarousel();
+    }
+
+    function updatePhotoViewer() {
+      const image = currentProject.images[currentPhotoIndex];
+
+      if (image.src) {
+        lightboxMedia.className = 'lightbox-media has-real-image';
+        lightboxMedia.setAttribute('style', image.bg ? 'background:' + image.bg + ';' : '');
+        lightboxMedia.innerHTML = `<img class="lightbox-img" src="${image.src}" alt="${escTexto(textoAlt(image, currentProject))}" style="${image.bg ? 'background:' + image.bg + ';' : ''}">`;
+      } else {
+        lightboxMedia.className = 'lightbox-media ' + mediaClass(image);
+        lightboxMedia.setAttribute('style', mediaStyle(image));
+        lightboxMedia.innerHTML = '';
+      }
+
+      lightboxProjectName.textContent = currentProject.title;
+      lightboxCaption.textContent = image.title + ' — ' + image.type;
+      lightboxCounter.textContent = `${currentPhotoIndex + 1} / ${currentProject.images.length}`;
+      updateVerticalCarousel();
+    }
+
+    function movePhotoViewer(direction) {
+      currentPhotoIndex = (currentPhotoIndex + direction + currentProject.images.length) % currentProject.images.length;
+      updatePhotoViewer();
+    }
+
+    // ── 12. VISUALIZAÇÃO AMPLA DOS DESENHOS ───────────────
+    function openDrawingViewer(index) {
+      const drawing = currentProject.drawings[index];
+      if (drawing.src) {
+        drawingFullImage.className = 'drawing-full-image has-real-image';
+        drawingFullImage.setAttribute('style', drawing.bg ? '--fundo:' + drawing.bg + ';' : '');
+        drawingFullImage.innerHTML = `<img class="drawing-full-img" src="${drawing.src}" alt="${escTexto(textoAlt(drawing, currentProject))}">`;
+      } else {
+        drawingFullImage.className = 'drawing-full-image ' + mediaClass(drawing);
+        drawingFullImage.setAttribute('style', mediaStyle(drawing));
+        drawingFullImage.innerHTML = '';
+      }
+      drawingFullTitle.textContent = drawing.title;
+      drawingFull.classList.add('is-open');
+      drawingFull.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeDrawingViewer() {
+      drawingFull.classList.remove('is-open');
+      drawingFull.setAttribute('aria-hidden', 'true');
+      if (!photoLightbox.classList.contains('is-open')) {
+        document.body.classList.remove('modal-open');
+      }
+    }
+
+    // ── 12B. MODELO 3D ────────────────────────────────────
+    // O visualizador (viewer3d-nome.html) roda num iframe dentro do quadro da página
+    // do projeto. Ampliar e voltar só mudam o tamanho do quadro: o modelo não
+    // recarrega e continua na cena em que estava.
+    function montarModelo3d() {
+      const arquivo = currentProject.modelo3d;
+      desmontarModelo3d();
+      modelo3dBox.hidden = !arquivo;
+
+      // Posição do quadro: ao lado (padrão), acima ou abaixo do carrossel de fotos.
+      const posicao = ['lado', 'acima', 'abaixo'].includes(currentProject.modelo3dPosicao)
+        ? currentProject.modelo3dPosicao : 'lado';
+      projectStage.classList.toggle('tem-modelo3d', Boolean(arquivo));
+      projectStage.classList.toggle('modelo3d-lado', Boolean(arquivo) && posicao === 'lado');
+      modelo3dBox.classList.toggle('is-acima', posicao === 'acima');
+      if (!arquivo) return;
+      if (posicao === 'acima') projectStage.insertBefore(modelo3dBox, projectMediaArea);
+      else projectStage.appendChild(modelo3dBox);
+
+      const frame = document.createElement('iframe');
+      frame.title = 'Modelo 3D de ' + currentProject.title;
+      frame.src = arquivo + (arquivo.includes('?') ? '&' : '?') + 'embutido=1';
+      modelo3dStage.appendChild(frame);
+      modelo3dTitle.textContent = 'Modelo 3D — ' + currentProject.title;
+    }
+
+    function desmontarModelo3d() {
+      recolherModelo3d();
+      modelo3dStage.innerHTML = '';
+    }
+
+    // Avisa o visualizador se o quadro está ampliado. No tamanho normal ele não
+    // prende a rolagem da página; ampliado, o controle é total.
+    function avisarModelo3d() {
+      const frame = modelo3dStage.querySelector('iframe');
+      if (!frame || !frame.contentWindow) return;
+      frame.contentWindow.postMessage(
+        { tipo: 'viewer3d:ampliado', valor: modelo3dBox.classList.contains('is-ampliado') },
+        location.origin === 'null' ? '*' : location.origin
+      );
+    }
+
+    function ampliarModelo3d() {
+      if (modelo3dBox.hidden) return;
+      closeAllPanels();
+      stopAutoCarousel();
+      modelo3dBox.classList.add('is-ampliado');
+      document.body.classList.add('modelo3d-open');
+      avisarModelo3d();
+      closeModelo3dButton.focus();
+    }
+
+    function recolherModelo3d() {
+      if (!modelo3dBox.classList.contains('is-ampliado')) return;
+      modelo3dBox.classList.remove('is-ampliado');
+      document.body.classList.remove('modelo3d-open');
+      avisarModelo3d();
+      if (projectPage.classList.contains('is-active')) restartAutoCarousel();
+    }
+
+    // Recua uma camada: se a planta estiver aberta por cima do modelo, fecha só
+    // a planta; senão, volta o quadro ao tamanho normal.
+    function recuarModelo3d() {
+      if (drawingFull.classList.contains('is-open')) closeDrawingViewer();
+      else recolherModelo3d();
+    }
+
+    // Recados que chegam do visualizador: carregou, clique em um cômodo (abre o
+    // desenho da aba "Desenhos") e tecla Esc pressionada lá dentro.
+    function receberRecadoModelo3d(event) {
+      const frame = modelo3dStage.querySelector('iframe');
+      if (!frame || event.source !== frame.contentWindow || event.origin !== location.origin) return;
+      const recado = event.data || {};
+
+      if (recado.tipo === 'viewer3d:pronto') avisarModelo3d();
+
+      if (recado.tipo === 'viewer3d:esc') recuarModelo3d();
+
+      if (recado.tipo === 'viewer3d:desenho') {
+        const desenhos = currentProject.drawings || [];
+        const indice = Number(recado.indice) || 0;
+        if (!desenhos[indice]) return;
+        openDrawingViewer(indice);
+        if (typeof recado.comodo === 'string' && recado.comodo) {
+          drawingFullTitle.textContent = desenhos[indice].title + ' — ' + recado.comodo.slice(0, 60);
+        }
+        closeDrawingFull.focus();
+      }
+    }
+
+    // ── 12C. TEXTO PARA O GOOGLE ──────────────────────────
+    // Texto alternativo das imagens, versão em texto do portfólio e dados estruturados.
+    // Nada aqui muda o que aparece na tela.
+
+    // Deixa um texto seguro para entrar no HTML (troca &, <, > e aspas).
+    function escTexto(texto) {
+      return String(texto == null ? '' : texto)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Texto alternativo de uma imagem: a linha "alt" dela. Sem essa linha,
+    // o título da imagem e o nome do projeto.
+    function textoAlt(item, project) {
+      if (!item) return '';
+      if (item.alt) return item.alt;
+      const igual = ((project && project.images) || []).find((imagem) => imagem.alt && imagem.src && imagem.src === item.src);
+      if (igual) return igual.alt;
+      const tipo = item.type ? ' (' + String(item.type).toLowerCase() + ')' : '';
+      return (item.title || 'Imagem') + tipo + (project ? ' — ' + project.title : '');
+    }
+
+    // Texto alternativo da capa: o da imagem do projeto que usa o mesmo arquivo.
+    function altCapa(project) {
+      const igual = (project.images || []).find((imagem) => imagem.alt && imagem.src && imagem.src === project.src);
+      return igual ? igual.alt : 'Capa do projeto ' + project.title;
+    }
+
+    // Monta a versão em texto do portfólio a partir dos dados do site.
+    function montarVersaoTexto() {
+      const linhas = [];
+      linhas.push(`<h1>${escTexto(identidade.titulo)}</h1>`);
+      linhas.push(`<p>${escTexto(identidade.resumo)}</p>`);
+      linhas.push('');
+      linhas.push(`<h2>${escTexto(systemPages.sobre.title)}</h2>`);
+      systemPages.sobre.copy.forEach((texto) => linhas.push(`<p>${texto}</p>`));
+      linhas.push('');
+      linhas.push(`<h2>${escTexto(systemPages.projetos.title)}</h2>`);
+      projects.forEach((project) => {
+        linhas.push('<article>');
+        linhas.push(`  <h3>${escTexto(project.title)}</h3>`);
+        linhas.push(`  <p>${escTexto([project.meta, project.category].filter(Boolean).join(' · '))}</p>`);
+        if (project.description) linhas.push(`  <p>${escTexto(project.description)}</p>`);
+        const infos = Object.entries(project.info || {});
+        if (infos.length) {
+          linhas.push('  <dl>');
+          infos.forEach(([rotulo, valor]) => linhas.push(`    <dt>${escTexto(rotulo)}</dt><dd>${escTexto(valor)}</dd>`));
+          linhas.push('  </dl>');
+        }
+        const imagens = (project.images || []).filter((imagem) => imagem.src);
+        if (imagens.length) {
+          linhas.push('  <ul>');
+          imagens.forEach((imagem) => linhas.push(`    <li><a href="${escTexto(imagem.src)}">${escTexto(textoAlt(imagem, project))}</a></li>`));
+          linhas.push('  </ul>');
+        }
+        linhas.push('</article>');
+      });
+      linhas.push('');
+      linhas.push(`<h2>${escTexto(systemPages.contato.title)}</h2>`);
+      linhas.push(`<p><a href="${escTexto(identidade.whatsapp)}">Solicitar orçamento pelo WhatsApp</a></p>`);
+      linhas.push(`<p><a href="mailto:${escTexto(identidade.email)}">${escTexto(identidade.email)}</a></p>`);
+      if (perfilInstagram) linhas.push(`<p><a href="${escTexto(perfilInstagram)}">Instagram ${escTexto(arrobaInstagram)}</a></p>`);
+      return linhas.join('\n');
+    }
+
+    // Refaz o bloco "VERSÃO EM TEXTO" com os textos atuais. Se a cópia escrita no
+    // HTML estiver desatualizada, avisa no console (a tela não muda).
+    function atualizarVersaoTexto() {
+      const bloco = document.getElementById('versaoTexto');
+      if (!bloco) return;
+      const soTexto = (texto) => texto.replace(/\s+/g, ' ').trim();
+      const antes = soTexto(bloco.textContent);
+      bloco.innerHTML = montarVersaoTexto();
+      if (antes !== soTexto(bloco.textContent)) {
+        console.info('[portfólio] A versão em texto escrita no index.html está diferente dos textos atuais. O site já usou os atuais; quando puder, atualize o bloco "VERSÃO EM TEXTO".');
+      }
+    }
+
+    // Dados estruturados (schema.org): dizem ao Google de quem é o portfólio e quais são os projetos.
+    // São montados com o endereço em que o site está aberto, então continuam certos quando o domínio mudar.
+    function publicarDadosEstruturados() {
+      const base = new URL('.', location.href).href;
+      const endereco = (caminho) => new URL(caminho, base).href;
+      const pessoa = {
+        '@type': 'Person',
+        '@id': base + '#pessoa',
+        name: identidade.nome,
+        description: identidade.resumo,
+        url: base,
+        image: endereco('assets/foto-sobre.jpg'),
+        knowsAbout: identidade.areas,
+        address: { '@type': 'PostalAddress', addressLocality: identidade.cidade, addressRegion: identidade.estado, addressCountry: 'BR' }
+      };
+      if (identidade.perfis && identidade.perfis.length) pessoa.sameAs = identidade.perfis;
+      const dados = {
+        '@context': 'https://schema.org',
+        '@graph': [
+          { '@type': 'WebSite', '@id': base + '#site', url: base, name: identidade.titulo, inLanguage: 'pt-BR', author: { '@id': base + '#pessoa' } },
+          {
+            '@type': 'ProfilePage',
+            '@id': base + '#pagina',
+            url: base,
+            name: identidade.titulo,
+            inLanguage: 'pt-BR',
+            isPartOf: { '@id': base + '#site' },
+            mainEntity: { '@id': base + '#pessoa' },
+            hasPart: projects.map((project) => {
+              const obra = { '@type': 'CreativeWork', name: project.title, genre: project.category, creator: { '@id': base + '#pessoa' }, url: base + '#' + project.id };
+              if (project.description) obra.description = project.description;
+              if (project.src) obra.image = endereco(project.src);
+              return obra;
+            })
+          },
+          pessoa
+        ]
+      };
+      const antigo = document.getElementById('dadosEstruturados');
+      if (antigo) antigo.remove();
+      const bloco = document.createElement('script');
+      bloco.type = 'application/ld+json';
+      bloco.id = 'dadosEstruturados';
+      bloco.textContent = JSON.stringify(dados);
+      document.head.appendChild(bloco);
+    }
+
+    // ── 13. CLIQUES, BOTÕES E EVENTOS ─────────────────────
+    if (menuButton) menuButton.addEventListener('click', openMenu);
+    if (closeButton) closeButton.addEventListener('click', closeMenu);
+
+    pageNavLinks.forEach((link) => {
+      link.addEventListener('click', (event) => {
+        const page = link.dataset.systemPage;
+        if (page) {
+          event.preventDefault();
+          closeMenu();
+          openSystemPage(page);
+        }
+      });
+    });
+
+    projectTrack.addEventListener('click', (event) => {
+      const card = event.target.closest('.project-card');
+      if (!card) return;
+      event.preventDefault();
+      openHallProjectCard(card);
+    });
+
+    prevProject.addEventListener('click', () => moveHallCarousel(-1));
+    nextProject.addEventListener('click', () => moveHallCarousel(1));
+
+    document.querySelectorAll('a.logo[href="#inicio"]').forEach((logoLink) => {
+      logoLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        closeMenu();
+        backHome();
+      });
+    });
+
+    infoButton.addEventListener('click', () => {
+      if (infoPanel.classList.contains('is-open')) closeInfoPanel();
+      else openInfoPanel();
+    });
+
+    drawingsButton.addEventListener('click', () => {
+      if (drawingsPanel.classList.contains('is-open')) closeDrawingsPanel();
+      else openDrawingsPanel();
+    });
+
+    projectPhotoTrack.addEventListener('click', (event) => {
+      const media = event.target.closest('.media-block');
+      if (!media || !projectPhotoTrack.contains(media)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      openPhotoViewer(Number(media.dataset.photoIndex));
+    });
+
+    projectPhotoTrack.addEventListener('pointerdown', () => {
+      projectAutoPaused = true;
+      projectPhotoTrack.classList.add('is-paused');
+      stopAutoCarousel();
+    });
+
+    projectPhotoTrack.addEventListener('pointerup', () => {
+      projectPhotoTrack.classList.remove('is-paused');
+      restartAutoCarousel();
+    });
+    projectPhotoTrack.addEventListener('pointerleave', () => {
+      projectPhotoTrack.classList.remove('is-paused');
+      restartAutoCarousel();
+    });
+    projectPhotoTrack.addEventListener('wheel', () => {
+      projectAutoPaused = true;
+      stopAutoCarousel();
+      window.clearTimeout(projectWheelTimer);
+      projectWheelTimer = window.setTimeout(restartAutoCarousel, 900);
+    }, { passive: true });
+
+    projectPhotoTrack.addEventListener('scroll', syncProjectDotFromScroll, { passive: true });
+
+    if (closeProjectPage) closeProjectPage.addEventListener('click', backHome);
+
+    closeInfo.addEventListener('click', closeInfoPanel);
+    closeDrawings.addEventListener('click', closeDrawingsPanel);
+    panelBackdrop.addEventListener('click', closeAllPanels);
+
+    closePhotoLightbox.addEventListener('click', closePhotoViewer);
+    prevPhoto.addEventListener('click', () => movePhotoViewer(-1));
+    nextPhoto.addEventListener('click', () => movePhotoViewer(1));
+    closeDrawingFull.addEventListener('click', closeDrawingViewer);
+
+    ampliarModelo3dButton.addEventListener('click', ampliarModelo3d);
+    closeModelo3dButton.addEventListener('click', recolherModelo3d);
+    window.addEventListener('message', receberRecadoModelo3d);
+    // Voltar/avançar do navegador com o modelo ampliado: fecha a planta (se
+    // estiver por cima) e volta o quadro ao tamanho normal.
+    window.addEventListener('popstate', () => {
+      if (!modelo3dBox.classList.contains('is-ampliado')) return;
+      closeDrawingViewer();
+      recolherModelo3d();
+    });
+    // Ao sair da página do projeto, o modelo é desligado.
+    new MutationObserver(() => {
+      if (!projectPage.classList.contains('is-active')) desmontarModelo3d();
+    }).observe(projectPage, { attributes: true, attributeFilter: ['class'] });
+
+    window.addEventListener('resize', () => {
+      if (projectPage.classList.contains('is-active')) restartAutoCarousel();
+    });
+
+    window.addEventListener('keydown', (event) => {
+      // Com o Modelo 3D ampliado, o Esc recua uma camada por vez (planta, depois o quadro).
+      if (event.key === 'Escape' && modelo3dBox.classList.contains('is-ampliado')) {
+        recuarModelo3d();
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        closePhotoViewer();
+        closeDrawingViewer();
+        closeAllPanels();
+        closeMenu();
+      }
+
+      if (photoLightbox.classList.contains('is-open')) {
+        if (event.key === 'ArrowLeft') movePhotoViewer(-1);
+        if (event.key === 'ArrowRight') movePhotoViewer(1);
+      }
+    });
+
+    window.addEventListener('popstate', () => {
+      let currentHash = location.hash.replace('#', '');
+      if (currentHash === 'processo') currentHash = 'projetos';
+      const projectExists = !!acharProjeto(currentHash);
+      const systemExists = Object.prototype.hasOwnProperty.call(systemPages, currentHash);
+
+      if (projectExists) {
+        openProject(currentHash, true);
+      } else if (systemExists) {
+        openSystemPage(currentHash, true);
+      } else {
+        stopAutoCarousel();
+        startHallAutoCarousel();
+        projectPage.classList.remove('is-active');
+        systemPage.classList.remove('is-active');
+        homeView.classList.remove('is-hidden');
+        homeHeader.style.removeProperty('display');
+        closeAllPanels();
+        closePhotoViewer();
+        closeDrawingViewer();
+      }
+    });
+
+    // ── 14. INICIALIZAÇÃO DO SITE ─────────────────────────
+    document.body.classList.add('page-home');
+    renderHallCarousel();
+    setupHallDrag();
+
+    // prefers-reduced-motion mantido como referência, mas não bloqueia os carrosséis
+    const prefersReducedMotion = false;
+
+    window.setTimeout(() => {
+      projectTrack.scrollLeft = 1;
+      startHallAutoCarousel();
+    }, 120);
+    const yearElement = document.getElementById('year');
+    if (yearElement) yearElement.textContent = new Date().getFullYear();
+
+    // Versão em texto e dados para o Google. Um erro aqui nunca pode derrubar o site.
+    try {
+      atualizarVersaoTexto();
+      publicarDadosEstruturados();
+    } catch (erro) {
+      console.warn('[portfólio] Não foi possível montar a versão em texto ou os dados estruturados.', erro);
+    }
+
+    let initialHash = location.hash.replace('#', '');
+    if (initialHash === 'processo') initialHash = 'projetos';
+    if (acharProjeto(initialHash)) {
+      openProject(initialHash, true);
+    } else if (Object.prototype.hasOwnProperty.call(systemPages, initialHash)) {
+      openSystemPage(initialHash, true);
+    }
+  </script>
+</body>
+</html>
