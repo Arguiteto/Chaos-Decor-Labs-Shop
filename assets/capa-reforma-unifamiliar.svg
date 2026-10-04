@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 980" width="600" height="980">
+<defs><pattern id="grao" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r=".8" fill="#000" opacity=".07"/><circle cx="5" cy="4.5" r=".6" fill="#fff" opacity=".09"/></pattern></defs>
+<rect width="600" height="980" fill="#D6A44E"/>
+
+<rect x="0" y="760" width="600" height="3" fill="#BE8C3A"/>
+<polygon points="40,760 560,760 600,790 80,790" fill="#BE8C3A"/>
+<rect x="40" y="474" width="520" height="286" fill="#A8552F"/>
+<rect x="8" y="450" width="584" height="26" fill="#8B4323"/>
+<rect x="408" y="490" width="138" height="222" fill="#F2E4C6"/>
+<rect x="420" y="498" width="12" height="206" fill="#8B4323"/><rect x="444" y="498" width="12" height="206" fill="#8B4323"/><rect x="468" y="498" width="12" height="206" fill="#8B4323"/><rect x="492" y="498" width="12" height="206" fill="#8B4323"/><rect x="516" y="498" width="12" height="206" fill="#8B4323"/>
+<circle cx="300" cy="540" r="30" fill="#F2E4C6"/>
+<circle cx="300" cy="540" r="30" fill="none" stroke="#8B4323" stroke-width="6"/>
+<line x1="270" y1="540" x2="330" y2="540" stroke="#8B4323" stroke-width="3"/>
+<path d="M65 760 L65 606 Q120 530 175 606 L175 760 Z" fill="#F2E4C6"/>
+<clipPath id="porta"><path d="M65 760 L65 606 Q120 530 175 606 L175 760 Z"/></clipPath>
+<g clip-path="url(#porta)"><line x1="120" y1="760" x2="232.6" y2="695.0" stroke="#A8552F" stroke-width="2"/><line x1="120" y1="760" x2="213.5" y2="669.7" stroke="#A8552F" stroke-width="2"/><line x1="120" y1="760" x2="188.9" y2="649.8" stroke="#A8552F" stroke-width="2"/><line x1="120" y1="760" x2="160.2" y2="636.4" stroke="#A8552F" stroke-width="2"/><line x1="120" y1="760" x2="129.1" y2="630.3" stroke="#A8552F" stroke-width="2"/><line x1="120" y1="760" x2="97.4" y2="632.0" stroke="#A8552F" stroke-width="2"/><line x1="120" y1="760" x2="67.1" y2="641.2" stroke="#A8552F" stroke-width="2"/><line x1="120" y1="760" x2="40.0" y2="657.6" stroke="#A8552F" stroke-width="2"/><line x1="120" y1="760" x2="17.6" y2="680.0" stroke="#A8552F" stroke-width="2"/><line x1="120" y1="760" x2="1.2" y2="707.1" stroke="#A8552F" stroke-width="2"/><circle cx="120" cy="760" r="34" fill="#A8552F"/><circle cx="120" cy="760" r="60" fill="none" stroke="#A8552F" stroke-width="2"/></g>
+<path d="M55 760 L55 604 Q120 514 185 604 L185 760" fill="none" stroke="#8B4323" stroke-width="8"/>
+
+<rect width="600" height="980" fill="url(#grao)"/>
+<text x="300" y="878" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="21" letter-spacing="7" fill="#3A2410">REFORMA UNIFAMILIAR</text>
+<text x="300" y="906" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="4.5" fill="#3A2410" opacity=".78">150 M² · ANOS 70 + ART DÉCO</text>
+</svg>

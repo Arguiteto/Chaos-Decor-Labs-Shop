@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 980" width="600" height="980">
+<defs><pattern id="grao" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r=".8" fill="#000" opacity=".07"/><circle cx="5" cy="4.5" r=".6" fill="#fff" opacity=".09"/></pattern></defs>
+<rect width="600" height="980" fill="#F59AB5"/>
+
+<rect x="0" y="700" width="600" height="280" fill="#EC7FA2"/>
+<rect x="56" y="168" width="208" height="400" fill="#BFE0FF"/>
+<circle cx="208" cy="236" r="38" fill="#FFC53D"/>
+<g stroke="#161214" stroke-width="5" fill="none"><rect x="56" y="168" width="208" height="400"/><line x1="160" y1="168" x2="160" y2="568"/><line x1="56" y1="368" x2="264" y2="368"/></g>
+<rect x="44" y="566" width="232" height="12" fill="#161214"/>
+
+<polygon points="96,700 304,700 400,830 150,830" fill="#FFD84D"/>
+<path d="M430 470 L430 330 Q430 250 490 250 Q550 250 550 330 L550 470 Z" fill="#2FB872"/>
+<path d="M444 470 L444 334 Q444 266 490 266 Q536 266 536 334 L536 470 Z" fill="none" stroke="#1F8A55" stroke-width="3"/>
+<path d="M360 690 L360 612 Q360 580 392 580 L560 580 Q592 580 592 612 L592 690 Z" fill="#3C6BFF"/>
+<rect x="346" y="640" width="260" height="56" rx="28" fill="#2F55D4"/>
+<rect x="372" y="694" width="10" height="16" fill="#161214"/><rect x="570" y="694" width="10" height="16" fill="#161214"/>
+<ellipse cx="330" cy="742" rx="42" ry="22" fill="#FF7A1A"/>
+<rect x="288" y="716" width="84" height="26" fill="#FF7A1A"/><ellipse cx="330" cy="716" rx="42" ry="14" fill="#FF9A4A"/>
+<path d="M30 700 L30 648 L66 648 L66 700 Z" fill="#FFD84D"/>
+<g stroke="#1F8A55" stroke-width="4" stroke-linecap="round" fill="none"><path d="M48 648 Q40 600 22 580"/><path d="M48 648 Q50 590 66 564"/><path d="M48 648 Q62 612 86 604"/></g>
+<g fill="#2FB872"><ellipse cx="20" cy="578" rx="14" ry="7" transform="rotate(40 20 578)"/><ellipse cx="68" cy="560" rx="14" ry="7" transform="rotate(-50 68 560)"/><ellipse cx="88" cy="602" rx="14" ry="7" transform="rotate(-10 88 602)"/></g>
+
+<rect width="600" height="980" fill="url(#grao)"/>
+<text x="300" y="878" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="21" letter-spacing="7" fill="#5A1030">INTERIORES</text>
+<text x="300" y="906" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="4.5" fill="#5A1030" opacity=".78">40 M² · DOPAMINE COLOR</text>
+</svg>

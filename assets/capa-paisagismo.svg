@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 980" width="600" height="980">
+<defs><pattern id="grao" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r=".8" fill="#000" opacity=".07"/><circle cx="5" cy="4.5" r=".6" fill="#fff" opacity=".09"/></pattern></defs>
+<rect width="600" height="980" fill="#A9C08F"/>
+
+<g fill="#2F4A2E"><circle cx="40" cy="170" r="110"/><circle cx="190" cy="120" r="92"/><circle cx="-20" cy="300" r="80"/><circle cx="150" cy="250" r="80"/><circle cx="260" cy="210" r="56"/></g>
+<g fill="#3F6340"><circle cx="110" cy="140" r="40"/><circle cx="30" cy="250" r="34"/><circle cx="210" cy="190" r="28"/></g>
+<polygon points="70,760 110,760 360,800 300,800" fill="#8FA876"/>
+<path d="M66 760 Q84 600 78 420 Q76 360 96 300 L110 304 Q96 380 102 460 Q108 620 114 760 Z" fill="#161214"/>
+<path d="M92 400 Q140 360 170 300" fill="none" stroke="#161214" stroke-width="9" stroke-linecap="round"/>
+<path d="M86 340 Q50 300 40 250" fill="none" stroke="#161214" stroke-width="7" stroke-linecap="round"/>
+<line x1="150" y1="342" x2="150" y2="372" stroke="#161214" stroke-width="1.5"/>
+<rect x="116" y="372" width="70" height="22" fill="#F2E4C6"/>
+<text x="151" y="387" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="9" letter-spacing="1.5" fill="#161214">EXISTENTE</text>
+<polygon points="236,760 404,760 470,790 300,790" fill="#8FA876"/>
+<rect x="236" y="700" width="168" height="60" fill="#161214"/>
+<rect x="244" y="708" width="152" height="12" fill="#6B4527"/>
+<g stroke="#2F4A2E" stroke-width="4" stroke-linecap="round" fill="none">
+<path d="M268 710 L268 664 M268 680 Q252 668 254 654 M268 674 Q284 662 282 648"/>
+<path d="M310 710 L310 650 M310 668 Q292 654 296 638 M310 662 Q328 650 324 634"/>
+<path d="M352 710 L352 668 M352 684 Q338 672 340 660 M352 678 Q368 666 366 654"/>
+<path d="M384 710 L384 680 M384 690 Q374 682 376 674"/></g>
+<g fill="#F2C14E"><circle cx="254" cy="652" r="7"/><circle cx="324" cy="632" r="7"/><circle cx="366" cy="652" r="6"/></g>
+<g fill="#E8674F"><circle cx="282" cy="646" r="6"/><circle cx="296" cy="636" r="6"/><circle cx="340" cy="658" r="6"/></g>
+<polygon points="456,760 580,760 600,772 600,784 490,784" fill="#8FA876"/>
+<g fill="#161214"><rect x="456" y="282" width="10" height="478"/><rect x="566" y="282" width="10" height="478"/><rect x="440" y="270" width="150" height="14"/></g>
+<g stroke="#161214" stroke-width="2.5"><line x1="466" y1="340" x2="566" y2="340"/><line x1="466" y1="398" x2="566" y2="398"/><line x1="466" y1="456" x2="566" y2="456"/><line x1="466" y1="514" x2="566" y2="514"/><line x1="466" y1="572" x2="566" y2="572"/><line x1="466" y1="630" x2="566" y2="630"/><line x1="466" y1="688" x2="566" y2="688"/><line x1="466" y1="746" x2="566" y2="746"/><line x1="516" y1="284" x2="516" y2="760"/></g>
+<path d="M500 760 Q470 720 510 690 Q552 660 512 620 Q474 584 520 548 Q560 516 512 478 Q476 446 520 410 Q556 380 512 340 Q490 318 470 300" fill="none" stroke="#2F4A2E" stroke-width="4"/>
+<ellipse cx="488" cy="742" rx="13" ry="6.5" fill="#3F6340" transform="rotate(-30 488 742)"/><ellipse cx="528" cy="708" rx="13" ry="6.5" fill="#2F4A2E" transform="rotate(24 528 708)"/><ellipse cx="500" cy="672" rx="13" ry="6.5" fill="#3F6340" transform="rotate(-40 500 672)"/><ellipse cx="476" cy="640" rx="13" ry="6.5" fill="#2F4A2E" transform="rotate(30 476 640)"/><ellipse cx="520" cy="610" rx="13" ry="6.5" fill="#3F6340" transform="rotate(-20 520 610)"/><ellipse cx="548" cy="578" rx="13" ry="6.5" fill="#2F4A2E" transform="rotate(40 548 578)"/><ellipse cx="510" cy="548" rx="13" ry="6.5" fill="#3F6340" transform="rotate(-30 510 548)"/><ellipse cx="482" cy="516" rx="13" ry="6.5" fill="#2F4A2E" transform="rotate(20 482 516)"/><ellipse cx="520" cy="484" rx="13" ry="6.5" fill="#3F6340" transform="rotate(-40 520 484)"/><ellipse cx="552" cy="452" rx="13" ry="6.5" fill="#2F4A2E" transform="rotate(20 552 452)"/><ellipse cx="512" cy="420" rx="13" ry="6.5" fill="#3F6340" transform="rotate(-20 512 420)"/><ellipse cx="484" cy="392" rx="13" ry="6.5" fill="#2F4A2E" transform="rotate(30 484 392)"/><ellipse cx="526" cy="360" rx="13" ry="6.5" fill="#3F6340" transform="rotate(-30 526 360)"/><ellipse cx="556" cy="330" rx="13" ry="6.5" fill="#2F4A2E" transform="rotate(10 556 330)"/><ellipse cx="500" cy="318" rx="13" ry="6.5" fill="#3F6340" transform="rotate(-50 500 318)"/><ellipse cx="460" cy="306" rx="13" ry="6.5" fill="#2F4A2E" transform="rotate(20 460 306)"/><circle cx="512" cy="690" r="6" fill="#E8674F"/><circle cx="494" cy="596" r="6" fill="#E8674F"/><circle cx="540" cy="520" r="6" fill="#E8674F"/><circle cx="498" cy="450" r="6" fill="#E8674F"/><circle cx="540" cy="392" r="6" fill="#E8674F"/><circle cx="478" cy="330" r="6" fill="#E8674F"/>
+<polygon points="150,760 222,760 262,774 180,774" fill="#8FA876"/>
+<g fill="#161214"><path d="M160 760 L164 712 L214 712 L218 760 Z"/><path d="M214 724 L252 694 L256 700 L220 738 Z"/><rect x="246" y="686" width="16" height="10" transform="rotate(-38 254 691)"/><path d="M168 712 Q189 682 210 712" fill="none" stroke="#161214" stroke-width="6"/></g>
+<rect x="166" y="734" width="46" height="5" fill="#E8674F"/>
+
+<rect width="600" height="980" fill="url(#grao)"/>
+<text x="300" y="878" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="21" letter-spacing="7" fill="#1F3320">PAISAGISMO</text>
+<text x="300" y="906" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="4.5" fill="#1F3320" opacity=".78">70 M² · VEGETAÇÃO PRESERVADA</text>
+</svg>
